@@ -109,7 +109,7 @@ public final class Genome {
         double weight = new Random().nextDouble();
 
         // Get a connection gene from inv database
-        ConnectionGene newConnection = inv_db.createConnectionGene(n1,n2,weight,0);
+        ConnectionGene newConnection = inv_db.createConnection(n1,n2,weight,0);
 
         // Create copy of list and add new Connection gene  to it
         ArrayList<ConnectionGene> newList = new ArrayList<>() ;
@@ -146,7 +146,7 @@ public final class Genome {
             // Disable connection from n1 to n2
             connections.remove(getConnection(n1, n2));
             for (int i = 0; i < connections.size(); i++)
-                if (connections.get(i).in == n1 && connections.get(i).out == n2)
+                if (connections.get(i).from == n1 && connections.get(i).to == n2)
                     connections.remove(connections.get(i));
         }
         // If it's not a new innovation, finish process if it doesn't already
@@ -159,7 +159,7 @@ public final class Genome {
                 // Disable connection from n1 to n2
                 connections.remove(getConnection(n1, n2));
                 for (int i = 0; i < connections.size(); i++)
-                    if (connections.get(i).in == n1 && connections.get(i).out == n2)
+                    if (connections.get(i).from == n1 && connections.get(i).to == n2)
                         connections.remove(connections.get(i));
             }
         }
@@ -171,7 +171,7 @@ public final class Genome {
         // Choose a random connection to augment
         ConnectionGene cg = connections.get(new Random().nextInt(connections.size()-1));
 
-        addNode(cg.in, cg.out);
+        addNode(cg.from, cg.to);
     }
 
     /*
@@ -234,7 +234,7 @@ public final class Genome {
     public boolean contains (ConnectionGene c) {
         // Look for matching innovation number
         for ( ConnectionGene cg : connections )
-            if (cg.in.id == c.in.id && cg.out.id == c.out.id) {
+            if (cg.from.id == c.from.id && cg.to.id == c.to.id) {
                 return true;
             }
         return false;
@@ -317,7 +317,7 @@ public final class Genome {
 
     public ConnectionGene getConnection (NodeGene in, NodeGene out) {
         for ( ConnectionGene cg : connections )
-            if (cg.in.id == in.id && cg.out.id == out.id)
+            if (cg.from.id == in.id && cg.to.id == out.id)
                 return cg;
         return null;
     }
