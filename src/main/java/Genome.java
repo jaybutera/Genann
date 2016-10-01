@@ -234,7 +234,7 @@ public final class Genome {
     public boolean contains (ConnectionGene c) {
         // Look for matching innovation number
         for ( ConnectionGene cg : connections )
-            if (cg.id == c.id && cg.id == c.id) {
+            if (cg.in.id == c.in.id && cg.out.id == c.out.id) {
                 return true;
             }
         return false;
