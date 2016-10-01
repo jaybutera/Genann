@@ -6,24 +6,21 @@ import java.util.Comparator;
 
 public class Genome {
     // These should be private
-    public ArrayList<NodeGene> input_nodes;           // Input neurons
-    public ArrayList<NodeGene> output_nodes;          // Output neurons
-    public ArrayList<NodeGene> hidden_nodes;          // Hidden neurons
-    public ArrayList<NodeGene> nodes;                 // All layers of nodes concatenated
-    public ArrayList<ConnectionGene> connections; // Link genes between all layers (with respect to nodes
+    private ArrayList<NodeGene> input_nodes;           // Input neurons
+    private ArrayList<NodeGene> output_nodes;          // Output neurons
+    private ArrayList<NodeGene> hidden_nodes;          // Hidden neurons
+    private ArrayList<NodeGene> nodes;                 // All layers of nodes concatenated
+    private ArrayList<ConnectionGene> connections; // Link genes between all layers (with respect to nodes
 
     public Genome (ArrayList<NodeGene> inputs,
                    ArrayList<NodeGene> hidden,
                    ArrayList<NodeGene> outputs,
                    ArrayList<ConnectionGene> connections) {
-        for ( NodeGene n : inputs )
-            addNode(n);
-        for ( NodeGene n : hidden )
-            addNode(n);
-        for ( NodeGene n : outputs )
-            addNode(n);
-        for ( ConnectionGene cg : connections )
-            addConnection(cg);
+        this.input_nodes = inputs;
+        this.output_nodes = outputs;
+        this.hidden_nodes = hidden;
+        this.connections = connections;
+
     }
 
     // Randomly generate minimal genome (perceptron structure)
@@ -74,135 +71,58 @@ public class Genome {
         }
     }
 
-    // Manually defined weight
-    public ConnectionGene addConnection (NodeGene n1, NodeGene n2, double weight) {
-        ConnectionGene cg = new ConnectionGene(n1,
-                n2,
-                weight,
-                0);
-        
-        // If this is a new innovation, add connection
-        if (inv_db.addInnovation(cg))
-            connections.add(cg);
 
-            // If it isn't new, add connection if it doesn't already exist in genome
-        else if (!this.contains(cg))
-            connections.add(cg);
-
-        return cg;
-    }
     /*
-    public void addConnection (int n1, int n2, double weight) {
-        connections.add( new ConnectionGene(getNodeById(n1),
-                                            getNodeById(n2),
-                                            weight,
-                                            innovationNum()) );
+    // Manually defined weight
+    // Returns a copy of the current Genome with a new connection added to it if it has not already been innovated before
+    public Genome addConnection (NodeGene n1, NodeGene n2, double weight) {
+
+        // Get a connection gene from inv database
+        ConnectionGene newConnection = inv_db.createConnectionGene(n1,n2,weight,0);
+
+        // Create copy of list and add new Connection gene  to it
+        ArrayList<ConnectionGene> newList = new ArrayList<>() ;
+        for (int i = 0 ; i<connections.size();i++){
+            newList.add(connections.get(i)) ;
+        }
+
+
+        // Create copy of current Genome
+        Genome newGenome = new Genome(this.input_nodes,this.hidden_nodes,this.output_nodes,newList);
+
+
+
+        return newGenome;
+
     }
     */
 
     // Automatic random weight
-    public ConnectionGene addConnection (NodeGene n1, NodeGene n2) {
+    // Returns a copy of the current Genome with a new connection added to it if it has not already been inonvated before
+
+    public Genome addConnection (NodeGene n1, NodeGene n2) {
         double weight = new Random().nextDouble();
 
-        return addConnection (n1, n2, weight);
-    }
-    /*
-    public void addConnection (int n1, int n2) {
-        connections.add( new ConnectionGene(getNodeById(n1),
-                                            getNodeById(n2),
-                                            new Random().nextDouble(),
-                                            innovationNum()) );
-    }
-    */
+        // Get a connection gene from inv database
+        ConnectionGene newConnection = inv_db.createConnectionGene(n1,n2,weight,0);
 
-    // Automatic random weight at random point
-    public ConnectionGene addConnection () {
-        Random r = new Random();
-        NodeGene n1;
-        NodeGene n2;
-
-        if ( !hidden_nodes.isEmpty() ) {
-            // Prob of first NodeGene depends on size of input layer
-            if (r.nextDouble() < input_nodes.size() / nodes.size()) {
-                if (input_nodes.size() == 1)
-                    n1 = input_nodes.get(0);
-                else
-                    n1 = input_nodes.get(r.nextInt(input_nodes.size()-1));
-            }
-            else {
-                if (hidden_nodes.size() == 1)
-                    n1 = hidden_nodes.get(0);
-                else
-                    n1 = hidden_nodes.get(r.nextInt(hidden_nodes.size()-1));
-            }
-        }
-        else { // If there are no hidden nodes, default input
-            if (input_nodes.size() == 1)
-                n1 = input_nodes.get(0);
-            else
-                n1 = input_nodes.get(r.nextInt(input_nodes.size()-1));
+        // Create copy of list and add new Connection gene  to it
+        ArrayList<ConnectionGene> newList = new ArrayList<>() ;
+        for (int i = 0 ; i<connections.size();i++){
+            newList.add(connections.get(i)) ;
         }
 
+        // Create copy of current Genome
+        Genome newGenome = new Genome(this.input_nodes,this.hidden_nodes,this.output_nodes,newList);
 
-        // TODO: Merge these if statements ^v
-        if ( !hidden_nodes.isEmpty() ) {
-            // Prob of second NodeGene depends on size of hidden layer
-            if (r.nextDouble() < hidden_nodes.size() / nodes.size()) {
-                if (hidden_nodes.size() == 1)
-                    n2 = hidden_nodes.get(0);
-                else
-                    n2 = hidden_nodes.get(r.nextInt(hidden_nodes.size()-1));
-            }
-            else {
-                if (output_nodes.size() == 1)
-                    n2 = output_nodes.get(0);
-                else
-                    n2 = output_nodes.get(r.nextInt(output_nodes.size()-1));
-            }
-        }
-        // Otherwise connect to output
-        else {
-            if (output_nodes.size() == 1)
-                n2 = output_nodes.get(0);
-            else
-                n2 = output_nodes.get(r.nextInt(output_nodes.size()));
-        }
 
-        return addConnection(n1, n2);
+
+        return newGenome;
     }
 
-    public void addConnection (ConnectionGene c) {
-        addNode(c.in);
-        addNode(c.out);
-        addConnection(c.in, c.out);
-    }
 
-    public void addConnections (ArrayList<ConnectionGene> cs) {
-        for (ConnectionGene c : cs)
-            addConnection(c);
-    }
 
-    // Add NodeGene given two NodeGene ids
-    /*
-    public void addNode (int n1, int n2) {
-        /* * * * * */
-    // Inputs  //
-        /* * * * * */
 
-    /*
-            NodeGene n = new NodeGene( nodeNum() );
-            nodes.add(n);
-            hidden_nodes.add(n);
-            // Connect n1 to n
-            addConnection(getNodeById(n1), n);
-            // Connect n to n2
-            addConnection(n, getNodeById(n2));
-            // Disable connection from n1 to n2
-            for (int i = 0; i < connections.size(); i++)
-                if (connections.get(i).in == getNodeById(n1) && connections.get(i).out == getNodeById(n2))
-                    connections.remove(connections.get(i));
-        }
-        */
     // Add NodeGene given two nodes
     public NodeGene addNode (NodeGene n1, NodeGene n2) {
         NodeGene n = new NodeGene();
@@ -249,26 +169,7 @@ public class Genome {
         addNode(cg.in, cg.out);
     }
 
-    // Add free floating NodeGene
-    public void addNode (NodeGene n) {
-        inv_db.addInnovation(n);
-
-        if ( !this.contains(n) ) {
-            nodes.add(n);
-
-            switch (n.type) {
-                case INPUT:
-                    input_nodes.add(n);
-                    break;
-                case HIDDEN:
-                    hidden_nodes.add(n);
-                    break;
-                case OUTPUT:
-                    output_nodes.add(n);
-                    break;
-            }
-        }
-    }
+    /*
 
     public Double getWeight (int input_id, int output_id) {
         try {
@@ -291,11 +192,11 @@ public class Genome {
         ArrayList<ConnectionGene> m = this.getMatching(g);
         // Debugging
         if (m.size() == 0) {
-            /*
-            System.out.println("No matching genes between genomes:");
-            System.out.println(g);
-            System.out.println(this);
-            */
+
+           // System.out.println("No matching genes between genomes:");
+           //System.out.println(g);
+           //System.out.println(this);
+
 
             return 0.0;
         }
@@ -307,7 +208,7 @@ public class Genome {
 
         return avg / m.size();
     }
-
+    */
     public int hiddenSize () {
         return hidden_nodes.size();
     }
@@ -319,6 +220,11 @@ public class Genome {
     public int outputSize () {
         return output_nodes.size();
     }
+
+    public int size() {
+        return nodes.size();
+    }
+
 
     public boolean contains (ConnectionGene c) {
         // Look for matching innovation number
@@ -337,15 +243,7 @@ public class Genome {
         return false;
     }
 
-    /*
-    public boolean contains (ConnectionGene c) {
-        // Look for matching innovation number
-        for ( ConnectionGene cg : connections )
-            if (c.compareTo(cg) == 1)
-                return true;
-        return false;
-    }
-    */
+
 
     // Returns any excess genes from THIS genome
     public ArrayList<ConnectionGene> getExcess (Genome g) {
@@ -419,9 +317,7 @@ public class Genome {
         return null;
     }
 
-    public int size() {
-        return nodes.size();
-    }
+
 
     // Display phenotype of genome
     public String toString() {
