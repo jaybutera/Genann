@@ -1,6 +1,8 @@
 /**
  * Created by devesh on 1/10/16.
  */
+import com.sun.xml.internal.ws.policy.spi.PolicyAssertionValidator;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -9,7 +11,7 @@ public class Species {
                     double dis_rate,
                     double link_rate,
                     double node_rate,
-                    Fitness f,
+                    PolicyAssertionValidator.Fitness f,
                     Innovations inv_db) {
         genomes = new ArrayList<Genome>();
         genomes.add(seed);
@@ -37,25 +39,7 @@ public class Species {
         c3 = 1.0;
     }
 
-    /*
-    public Species (final Genome seed,
-                    double c1,
-                    double c2,
-                    double c3) {
-        genomes = new ArrayList<Genome>();
-        genomes.add(seed);
-        // Initialize species in/out node standard
-        input_size  = seed.inputSize();
-        output_size = seed.outputSize();
-        // Initial genome becomes the rep
-        representative = seed;
-        // Initialize compatability parameters
-        this.c1 = c1;
-        this.c2 = c2;
-        this.c3 = c3;
-    }
-    */
-
+    // Checks if a genome should exist in a species
     public double compatibility (Genome g) {
         int N;
 
@@ -112,10 +96,12 @@ public class Species {
         // future.
         // Mate each adjacent genome
         for (int i = 1; i < pop_size; i++)
-            children.add( crossover(genomes.get(i-1), representative) );
+            children.add( genomes.get(i-1).crossover(representative) );
 
         // Add a final genome to keep same population size
-        children.add( crossover(genomes.get(0), genomes.get(genomes.size()-1)) );
+        children.add( genomes.get(genomes.size()-1).crossover(genomes.get(0) ) );
+
+
 
         // Get rep from genomes to guide next generation speciation
         updateRep();
@@ -149,6 +135,7 @@ public class Species {
         return g.fitness / genomes.size();
     }
 
+
     // For debugging. Should take this out soon.
     public Genome getRep () {
         return representative;
@@ -166,41 +153,13 @@ public class Species {
     /*   PRIVATE   */
     /***************/
 
-    private void perturbLinks (ArrayList<Node> input_layer,
-                               ArrayList<Node> output_layer,
-                               Genome g) {
-        Random r = new Random();
 
-        Node inp;
-        Node out;
-
-        // Predefinition avoids run away size changes in for loops
-        int inp_size = input_layer.size();
-        int out_size = output_layer.size();
-
-        for (int i = 0; i < inp_size; i++) {
-            inp = input_layer.get(i);
-
-            for (int j = 0; j < out_size; j++) {
-                out = output_layer.get(j);
-
-                //if ( r.nextDouble() < link_rate ) {
-                // Chance to add a connection
-                if ( r.nextDouble() < link_rate ) {
-                    g.addConnection(inp, out);
-                }
-                else if ( r.nextDouble() < node_rate ) {
-                    g.addNode(inp, out);
-                }
-                //}
-            }
-        }
-    }
 
     private ArrayList<Genome> genomes;
     private Genome representative;
     private Fitness f;
     private Innovations inv_db;
+
 
     public final int input_size;
     public final int output_size;
@@ -214,6 +173,7 @@ public class Species {
     private double dis_rate;
     private double link_rate;
     private double node_rate;
+    private double weight_val_rate;
 
     // Species average fitness
     private Double avg_fit;
