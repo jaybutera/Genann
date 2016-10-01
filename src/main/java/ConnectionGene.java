@@ -1,25 +1,27 @@
 public final class ConnectionGene {
-  int id;
+
+	NodeGene from;
+  NodeGene to;
   float weight;
   boolean enabled;
-  NodeGene to;
-  NodeGene from;
+	int id;
 
-  ConnectionGene(int id, float weight, boolean enabled, NodeGene to, NodeGene from){
-    this.id = id;
-    this.weight = weight;
-    this.enabled = enabled;
+  ConnectionGene(NodeGene from, NodeGene to, float weight, boolean enabled, int id){
+		this.from = from;
     this.to = to;
-    this.from = from;
+		this.weight = weight;
+    this.enabled = enabled;
+		this.id = id;
+
   }
   ConnectionGene(ConnectionGene c){
-    this(c.id,c.weight,c.enabled,c.to,c.from);
+    this(c.from,c.to,c.weight,c.enabled,c.id);
   }
   ConnectionGene flip(){
-    return new ConnectionGene(c.id,c.weight,!c.enabled,c.to,c.from);
+    return new ConnectionGene(c.from,c.to,c.weight,!c.enabled,c.id);
   }
   ConnectionGene setWeight(float w){
-    return new ConnectionGene(c.id,w,c.enabled,c.to,c.from);
+    return new ConnectionGene(c.from,c.to,w,c.enabled,c.id);
   }
   boolean isEnabled(){
     return enabled;
