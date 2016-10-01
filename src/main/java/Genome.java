@@ -12,6 +12,9 @@ public final class Genome {
     public ArrayList<NodeGene> nodes;                 // All layers of nodes concatenated
     public ArrayList<ConnectionGene> connections; // Link genes between all layers (with respect to nodes
 
+    //Count number of genes in Genome;
+    private int count;
+
     public Genome (ArrayList<NodeGene> inputs,
                    ArrayList<NodeGene> hidden,
                    ArrayList<NodeGene> outputs,
@@ -20,6 +23,7 @@ public final class Genome {
         this.output_nodes = outputs;
         this.hidden_nodes = hidden;
         this.connections = connections;
+        this.count = input_nodes.size() + output_nodes.size() + hidden_nodes.size();
 
     }
 
@@ -39,7 +43,7 @@ public final class Genome {
         for (int i = 0; i < inputs; i++) {
             NodeGene n = new NodeGene();
             n.id = inv_id++;
-            addNode(n);
+            input_nodes.add(n);
         }
 
         // Initialize output neurons
@@ -47,7 +51,7 @@ public final class Genome {
         for (int i = 0; i < outputs; i++) {
             NodeGene n = new NodeGene();
             n.id = inv_id++;
-            addNode(n);
+            output_nodes.add(n);
         }
 
         // Randomly generate weights if requested
@@ -130,39 +134,8 @@ public final class Genome {
 
     // Add NodeGene given two nodes
     public NodeGene addNode (NodeGene n1, NodeGene n2) {
-        NodeGene n = new NodeGene();
+        NodeGene n = new NodeGene(count);
 
-        // Connect n1 to n
-        ConnectionGene c1 = addConnection(n1, n);
-        // Connect n to n2
-        ConnectionGene c2 = addConnection(n, n2);
-
-        // If this is a new innovation, finish augmentation process
-        if (inv_db.addInnovation(c1, c2, n)) {
-            // Add to local genome database
-            nodes.add(n);
-            hidden_nodes.add(n);
-
-            // Disable connection from n1 to n2
-            connections.remove(getConnection(n1, n2));
-            for (int i = 0; i < connections.size(); i++)
-                if (connections.get(i).from == n1 && connections.get(i).to == n2)
-                    connections.remove(connections.get(i));
-        }
-        // If it's not a new innovation, finish process if it doesn't already
-        // exist in genome
-        else {
-            if ( getNodeById(n.id) == null ) {
-                nodes.add(n);
-                hidden_nodes.add(n);
-
-                // Disable connection from n1 to n2
-                connections.remove(getConnection(n1, n2));
-                for (int i = 0; i < connections.size(); i++)
-                    if (connections.get(i).from == n1 && connections.get(i).to == n2)
-                        connections.remove(connections.get(i));
-            }
-        }
 
         return n;
     }
