@@ -4,13 +4,13 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.Comparator;
 
-public class Genome {
+public final class Genome {
     // These should be private
-    private ArrayList<NodeGene> input_nodes;           // Input neurons
-    private ArrayList<NodeGene> output_nodes;          // Output neurons
-    private ArrayList<NodeGene> hidden_nodes;          // Hidden neurons
-    private ArrayList<NodeGene> nodes;                 // All layers of nodes concatenated
-    private ArrayList<ConnectionGene> connections; // Link genes between all layers (with respect to nodes
+    public ArrayList<NodeGene> input_nodes;           // Input neurons
+    public ArrayList<NodeGene> output_nodes;          // Output neurons
+   public ArrayList<NodeGene> hidden_nodes;          // Hidden neurons
+    public ArrayList<NodeGene> nodes;                 // All layers of nodes concatenated
+    public ArrayList<ConnectionGene> connections; // Link genes between all layers (with respect to nodes
 
     public Genome (ArrayList<NodeGene> inputs,
                    ArrayList<NodeGene> hidden,
@@ -37,7 +37,7 @@ public class Genome {
         // Initialize input neurons
         input_nodes  = new ArrayList<NodeGene>();
         for (int i = 0; i < inputs; i++) {
-            NodeGene n = new NodeGene(NodeType.INPUT);
+            NodeGene n = new NodeGene();
             n.id = inv_id++;
             addNode(n);
         }
@@ -45,7 +45,7 @@ public class Genome {
         // Initialize output neurons
         output_nodes = new ArrayList<NodeGene>();
         for (int i = 0; i < outputs; i++) {
-            NodeGene n = new NodeGene(NodeType.OUTPUT);
+            NodeGene n = new NodeGene();
             n.id = inv_id++;
             addNode(n);
         }
@@ -97,6 +97,11 @@ public class Genome {
     }
     */
 
+
+    public void addConnections (ArrayList<ConnectionGene> cs) {
+        for (ConnectionGene c : cs)
+            addConnection(c);
+    }
     // Automatic random weight
     // Returns a copy of the current Genome with a new connection added to it if it has not already been inonvated before
 
@@ -187,7 +192,7 @@ public class Genome {
             return 0.0;
         }
     }
-
+    */
     public double weightDiff (Genome g) {
         ArrayList<ConnectionGene> m = this.getMatching(g);
         // Debugging
@@ -208,7 +213,7 @@ public class Genome {
 
         return avg / m.size();
     }
-    */
+
     public int hiddenSize () {
         return hidden_nodes.size();
     }
@@ -229,7 +234,7 @@ public class Genome {
     public boolean contains (ConnectionGene c) {
         // Look for matching innovation number
         for ( ConnectionGene cg : connections )
-            if (cg.in.id == c.in.id && cg.out.id == c.out.id) {
+            if (cg.id == c.id && cg.id == c.id) {
                 return true;
             }
         return false;
@@ -370,4 +375,123 @@ public class Genome {
                 return n;
         return null;
     }
+
+    // TODO: public for debugging. Make private
+    public Genome crossover ( Genome g2) {
+        // Create empty child, no random weights
+        Genome child = new Genome(input_size, output_size, false, inv_db);
+
+        // Start from standard template
+        //Genome child = new Genome(g1);
+
+        // Assign all matching connection genes
+        ArrayList<ConnectionGene> matching = this.getMatching(g2);
+        child.addConnections(matching);
+
+        double g1_fit = adjFitness(this);
+        double g2_fit = adjFitness(g2);
+
+        // If parents have equal fitness, randomly match excess genes
+        if (g1_fit == g2_fit) {
+            Random r = new Random();
+
+            // Get excess from both parents
+            ArrayList<ConnectionGene> excess = this.getExcess(g2);
+            excess.addAll( g2.getExcess(this) );
+
+            // Get disjoint from both parents
+            ArrayList<ConnectionGene> disjoint = this.getDisjoint(g2);
+            disjoint.addAll( g2.getDisjoint(this) );
+
+            // Randomly assign excess genes to child
+            for ( ConnectionGene c : excess )
+                if ( r.nextBoolean() )
+                    child.addConnection(c);
+            for ( ConnectionGene c : disjoint )
+                if ( r.nextBoolean() )
+                    child.addConnection(c);
+        }
+
+        // Otherwise child inherits excess/disjoint genes of most fit parent
+        else if (g1_fit > g2_fit) {
+            child.addConnections( this.getExcess(g2) );
+            child.addConnections( this.getDisjoint(g2) );
+        }
+        else if (g1_fit < g2_fit) {
+            child.addConnections( g2.getExcess(this) );
+            child.addConnections( g2.getDisjoint(this) );
+        }
+
+        // Apply mutations
+        child.mutate();
+
+
+
+        return child;
+    }
+
+    public void mutate(double weight_val_rate, double dis_rate) {
+        Random r = new Random();
+
+        //double weight_val_rate = .10;
+
+        // Mutations for input to hidden connections
+        perturbLinks(input_nodes, hidden_nodes);
+
+        // Mutations for hidden to hidden connections
+        perturbLinks(hidden_nodes, hidden_nodes);
+
+        // Mutations for hidden to output connections
+        perturbLinks(hidden_nodes, output_nodes);
+
+        // Mutations for input to output connections
+        perturbLinks(input_nodes, output_nodes);
+
+        // Mutate existing connections
+        for ( ConnectionGene cg : connections ) {
+            // Chance to change weight
+            if ( r.nextDouble() < weight_val_rate )
+                cg.weight = r.nextDouble();
+
+            // Chance to enable or disable (flip) connection gene
+            if ( r.nextDouble() < dis_rate )
+                cg.enabled = !cg.enabled;
+            //cg = cg.flipGene();
+        }
+    }
+
+
+    //
+    private void perturbLinks (ArrayList<NodeGene> input_layer,
+                               ArrayList<NodeGene> output_layer) {
+        Random r = new Random();
+
+        NodeGene inp;
+        NodeGene out;
+
+        // Predefinition avoids run away size changes in for loops
+        int inp_size = input_layer.size();
+        int out_size = output_layer.size();
+
+        for (int i = 0; i < inp_size; i++) {
+            inp = input_layer.get(i);
+
+            for (int j = 0; j < out_size; j++) {
+                out = output_layer.get(j);
+
+                //if ( r.nextDouble() < link_rate ) {
+                // Chance to add a connection
+                if ( r.nextDouble() < link_rate ) {
+                    g.addConnection(inp, out);
+                }
+                else if ( r.nextDouble() < node_rate ) {
+                    g.addNode(inp, out);
+                }
+                //}
+            }
+        }
+    }
+
+
+
 }
