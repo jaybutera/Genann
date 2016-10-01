@@ -18,10 +18,10 @@ public final class ConnectionGene {
     this(c.from,c.to,c.weight,c.enabled,c.id);
   }
   ConnectionGene flip(){
-    return new ConnectionGene(c.from,c.to,c.weight,!c.enabled,c.id);
+    return new ConnectionGene(this.from,this.to,this.weight,!this.enabled,this.id);
   }
   ConnectionGene setWeight(float w){
-    return new ConnectionGene(c.from,c.to,w,c.enabled,c.id);
+    return new ConnectionGene(this.from,this.to,w,this.enabled,this.id);
   }
   boolean isEnabled(){
     return enabled;
