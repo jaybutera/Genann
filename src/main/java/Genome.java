@@ -370,4 +370,88 @@ public class Genome {
                 return n;
         return null;
     }
+
+    // TODO: public for debugging. Make private
+    public Genome crossover (Genome g1, Genome g2) {
+        // Create empty child, no random weights
+        Genome child = new Genome(input_size, output_size, false, inv_db);
+
+        // Start from standard template
+        //Genome child = new Genome(g1);
+
+        // Assign all matching connection genes
+        ArrayList<ConnectionGene> matching = g1.getMatching(g2);
+        child.addConnections(matching);
+
+        double g1_fit = adjFitness(g1);
+        double g2_fit = adjFitness(g2);
+
+        // If parents have equal fitness, randomly match excess genes
+        if (g1_fit == g2_fit) {
+            Random r = new Random();
+
+            // Get excess from both parents
+            ArrayList<ConnectionGene> excess = g1.getExcess(g2);
+            excess.addAll( g2.getExcess(g1) );
+
+            // Get disjoint from both parents
+            ArrayList<ConnectionGene> disjoint = g1.getDisjoint(g2);
+            disjoint.addAll( g2.getDisjoint(g1) );
+
+            // Randomly assign excess genes to child
+            for ( ConnectionGene c : excess )
+                if ( r.nextBoolean() )
+                    child.addConnection(c);
+            for ( ConnectionGene c : disjoint )
+                if ( r.nextBoolean() )
+                    child.addConnection(c);
+        }
+
+        // Otherwise child inherits excess/disjoint genes of most fit parent
+        else if (g1_fit > g2_fit) {
+            child.addConnections( g1.getExcess(g2) );
+            child.addConnections( g1.getDisjoint(g2) );
+        }
+        else if (g1_fit < g2_fit) {
+            child.addConnections( g2.getExcess(g1) );
+            child.addConnections( g2.getDisjoint(g1) );
+        }
+
+        // Apply mutations
+        mutate(child);
+
+       
+
+        return child;
+    }
+
+    public void mutate(Genome g) {
+        Random r = new Random();
+
+        double weight_val_rate = .10;
+
+        // Mutations for input to hidden connections
+        perturbLinks(g.input_nodes, g.hidden_nodes, g);
+
+        // Mutations for hidden to hidden connections
+        perturbLinks(g.hidden_nodes, g.hidden_nodes, g);
+
+        // Mutations for hidden to output connections
+        perturbLinks(g.hidden_nodes, g.output_nodes, g);
+
+        // Mutations for input to output connections
+        perturbLinks(g.input_nodes, g.output_nodes, g);
+
+        // Mutate existing connections
+        for ( ConnectionGene cg : g.connections ) {
+            // Chance to change weight
+            if ( r.nextDouble() < weight_val_rate )
+                cg.weight = r.nextDouble();
+
+            // Chance to enable or disable (flip) connection gene
+            if ( r.nextDouble() < dis_rate )
+                cg.enabled = !cg.enabled;
+            //cg = cg.flipGene();
+        }
+    }
 }
