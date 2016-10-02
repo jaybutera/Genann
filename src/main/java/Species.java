@@ -72,6 +72,22 @@ public class Species {
                 .sum();
     }
 
+
+    public Creature getMostFit () {
+
+        Creature cret = creatures.get(0);
+        for (Creature c : creatures) {
+
+            if (cret.fitness< c.fitness) {
+
+
+                cret = c;
+            }
+        }
+
+        return cret;
+    }
+
     public ArrayList<Creature> reproduce (double total_fit) {
 
         ArrayList<Creature> newCreatures = new ArrayList<Creature>();
