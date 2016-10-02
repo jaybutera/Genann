@@ -1,7 +1,7 @@
 public class Creature {
     Creature(Genome g) {
         this.g = g;
-        net = new Network(g);
+        net = new RNN(g);
     }
 
     public Double fitness;
