@@ -1,3 +1,6 @@
+
+import java.util.Arrays;
+
 public class TestGA {
     public static void main(String args[]) {
         XOR f = new XOR();
@@ -12,12 +15,12 @@ public class TestGA {
             //System.out.println("Number of species: " + p.getNumSpecies());
             p = p.nextGen();
             System.out.println("Most fit genome:\n\n" + p.getMostFit());
-            System.out.println("Top fitness: " + f.simulate( new Network(p.getMostFit()) ));
+            System.out.println("Top fitness: " + f.simulate( new RNN(p.getMostFit()) ));
         }
 
         Genome g = p.getMostFit();
         System.out.println(g);
-        Network n = new Network(g);
+        RNN n = new RNN(g);
         System.out.println(n);
         System.out.print("Output: ");
         Double[] outs = f.getOuts();
@@ -25,5 +28,9 @@ public class TestGA {
             System.out.print(outs[i] + ", ");
         System.out.println("");
         //System.out.println("Convergence success: " + (1 - g.fitness / init_fit.fitness) + " %");
+ 
+
+
+        
     }
 }

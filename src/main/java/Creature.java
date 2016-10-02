@@ -4,7 +4,7 @@ public class Creature {
         net = new RNN(g);
     }
 
-    public Double fitness;
+    public Double fitness = 0.0;
     public Genome g;
     public RNN net;
 }

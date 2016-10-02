@@ -31,12 +31,13 @@ public class NEATPop {
         // Create an initial species for all genomes of first generation to reproduce in (randomly generate initial weights)
         ArrayList<ConnectionGene> conn = new ArrayList();
         Genome g = new Genome(inputs, outputs, 0, inv_db);
-
         species.add( new Species(g, dis_rate, link_rate, node_rate, f, inv_db) );
 
         // Speciate all genomes in population
         for (int i = 1; i < size; i++) {
-            species.get(0).add(g.clone());
+            
+            g = g.clone();
+            species.get(0).add(g);
         }
     }
 
@@ -114,11 +115,13 @@ public class NEATPop {
             // Remove obsolete species
             if (s.size() < 1)
                 species.remove(s);
+            
             ArrayList<Genome> genomePop = new ArrayList();
             ArrayList<Creature> creaturePop = s.reproduce(total_fit);
             for(Creature c: creaturePop){
                 genomePop.add(c.g);
             }
+//            s.reproduce(total_fit).stream()
             pop.addAll(genomePop);
             s.flush(); // Remove all genomes for respeciation (NEAT style)
         }

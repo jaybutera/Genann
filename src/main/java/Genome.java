@@ -8,8 +8,8 @@ public final class Genome {
     // These should be private
     public Random r = new Random();
     public final int INPUTS, OUTPUTS;       // Hidden neurons
-    public ArrayList<NodeGene> nodes;                 // All layers of nodes concatenated
-    public ArrayList<ConnectionGene> connections; // Link genes between all layers (with respect to nodes
+    public ArrayList<NodeGene> nodes = new ArrayList();                 // All layers of nodes concatenated
+    public ArrayList<ConnectionGene> connections = new ArrayList(); // Link genes between all layers (with respect to nodes
 
     ArrayList<NodeGene> input_nodes, output_nodes, hidden_nodes;
 
@@ -19,13 +19,15 @@ public final class Genome {
     public Genome(int inputs, int outputs, int hidden, InnovationDB inv_db) {
         this.INPUTS = inputs;
         this.OUTPUTS = outputs;
-
+        this.inv_db = inv_db;
         for (int i = 0; i < inputs + outputs + hidden; i++) {
             nodes.add(new NodeGene(i + 1));
         }
         input_nodes = inputNodes();
         output_nodes = outputNodes();
         hidden_nodes = hiddenNodes();
+        inv_db.createConnection(inputNodes().get(0), outputNodes().get(0), r.nextDouble());
+
     }
 
     public Genome(int inputs, int outputs, int hidden, InnovationDB inv_db, ArrayList<ConnectionGene> c) {
@@ -62,8 +64,7 @@ public final class Genome {
 
     // Automatic random weight
     // Returns a copy of the current Genome with a new connection added to it if it has not already been inonvated before
-    private Genome addConnection(NodeGene n1, NodeGene n2, double weight) {
-
+    private Genome addConnection(NodeGene n1, NodeGene n2, double weight){
         // Get a connection gene from inv database
         ConnectionGene newConnection = inv_db.createConnection(n1, n2, weight);
 
@@ -75,7 +76,7 @@ public final class Genome {
 //        }
 
     public ArrayList<ConnectionGene> getExcess(Genome g) {
-
+        System.out.println(g.connections);
         Integer this_max_inv = g.connections.stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
 
         return this.connections.stream().filter(s -> s.id > this_max_inv).collect(Collectors.toCollection(ArrayList::new));
@@ -300,11 +301,11 @@ public final class Genome {
     }
 
     public ArrayList<NodeGene> outputNodes() {
-        return new ArrayList(nodes.subList(INPUTS, OUTPUTS));
+        return new ArrayList(nodes.subList(INPUTS, INPUTS+OUTPUTS));
     }
 
     public ArrayList<NodeGene> hiddenNodes() {
-        return new ArrayList(nodes.subList(OUTPUTS, nodes.size() - 1));
+        return new ArrayList(nodes.subList(OUTPUTS+INPUTS, nodes.size()));
     }
     public int hiddenSize(){
         return hiddenNodes().size();

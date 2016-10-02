@@ -135,7 +135,10 @@ public class Species {
     }
 
     public Double updateFitness () {
-        avg_fit = creatures.stream().map(g -> g.fitness)
+        avg_fit = creatures.stream().map(c -> {
+//            System.out.println(g.fitness);
+            return c.fitness;
+                })
                 .mapToDouble(Double::doubleValue)
                 .sum();
 
@@ -148,7 +151,7 @@ public class Species {
         return c.fitness / creatures.size();
     }
 
-
+    
     // For debugging. Should take this out soon.
     public Creature getRep () {
         return representative;

@@ -3,8 +3,8 @@ import java.util.Arrays;
 
 
 
-public class Network {
-    public Network(Genome g) {
+public class RNN {
+    public RNN(Genome g) {
         // TODO: This entire constructor is so ugly and a terrible idea. Need to fix this.
 
         /*****************************/
@@ -68,7 +68,7 @@ public class Network {
                 outputWeights[i][j] = g.getWeight(ih_neuron_ids[j],output_neuron_ids[i]);
     }
 
-    private Network (Double[][] inputWeights,
+    private RNN (Double[][] inputWeights,
                      Double[][] hiddenWeights,
                      Double[][] outputWeights)
     {
@@ -152,8 +152,8 @@ public class Network {
             return this;
         }
 
-        public Network createNetwork () {
-            return new Network (inputs, hidden, outputs);
+        public RNN createNetwork () {
+            return new RNN (inputs, hidden, outputs);
         }
     }
 
