@@ -15,6 +15,8 @@ public final class Genome {
 	//Count number of genes in Genome;
 	private int count;
 
+    private InnovationDB inv_db;
+
 	public Genome (ArrayList<NodeGene> inputs,
 	ArrayList<NodeGene> hidden,
 	ArrayList<NodeGene> outputs,
@@ -28,7 +30,7 @@ public final class Genome {
 	}
 
 	// Randomly generate minimal genome (perceptron structure)
-	public Genome (int inputs, int outputs, boolean randGen) {
+	public Genome (int inputs, int outputs, InnovationDB inv_db) {
 		// Initialize empty lists
 		connections  = new ArrayList<ConnectionGene>();
 		nodes        = new ArrayList<NodeGene>();
@@ -41,7 +43,7 @@ public final class Genome {
 
 
 		// Randomly generate weights if requested
-		if (randGen) {
+
 			Random r = new Random();
 
 			// Make at least one connection
@@ -58,16 +60,20 @@ public final class Genome {
 			int links = new Random().nextInt(inputs*outputs-1);
 			for (int i = 0; i < links; i++)
 			addConnection();
-		}
+
 	}
 
 	public addNodes(ArrayList<NodeGenes> gs, int n){
 
 	}
-	public void addConnections (ArrayList<ConnectionGene> cs) {
+
+	private Genome addConnections (ArrayList<ConnectionGene> cs) {
+        Genome gen;
 		for (ConnectionGene c : cs)
-		addConnection(c);
+		    addConnection(c);
+        return this.addConnection(cs);
 	}
+
 	// Automatic random weight
 	// Returns a copy of the current Genome with a new connection added to it if it has not already been inonvated before
 
@@ -75,15 +81,15 @@ public final class Genome {
 		double weight = new Random().nextDouble();
 
 		// Get a connection gene from inv database
-		ConnectionGene newConnection = inv_db.createConnection(n1,n2,weight,0);
+		ConnectionGene newConnection = inv_db.createConnection(n1,n2,weight);
 
 		// Create copy of list and add new Connection gene  to it
-		ArrayList<ConnectionGene> newList;
+		ArrayList<ConnectionGene> newList = new ArrayList<ConnectionGene>();
 		newList.addAll(connections);
-		newList.add()
+		newList.add(newConnection);
+
 		// Create copy of current Genome
 		Genome newGenome = new Genome(this.input_nodes,this.hidden_nodes,this.output_nodes,newList);
-
 
 
 		return newGenome;
