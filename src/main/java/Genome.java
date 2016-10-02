@@ -39,19 +39,6 @@ public final class Genome {
 		// Initialize input neurons
 		input_nodes  = new ArrayList<NodeGene>();
 
-		for (int i = 0; i < inputs; i++) {
-			NodeGene n = new NodeGene();
-			n.id = inv_id++;
-			input_nodes.add(n);
-		}
-
-		// Initialize output neurons
-		output_nodes = new ArrayList<NodeGene>();
-		for (int i = 0; i < outputs; i++) {
-			NodeGene n = new NodeGene();
-			n.id = inv_id++;
-			output_nodes.add(n);
-		}
 
 		// Randomly generate weights if requested
 		if (randGen) {
@@ -74,7 +61,9 @@ public final class Genome {
 		}
 	}
 
+	public addNodes(ArrayList<NodeGenes> gs, int n){
 
+	}
 	public void addConnections (ArrayList<ConnectionGene> cs) {
 		for (ConnectionGene c : cs)
 		addConnection(c);
@@ -89,11 +78,9 @@ public final class Genome {
 		ConnectionGene newConnection = inv_db.createConnection(n1,n2,weight,0);
 
 		// Create copy of list and add new Connection gene  to it
-		ArrayList<ConnectionGene> newList = new ArrayList<>() ;
-		for (int i = 0 ; i<connections.size();i++){
-			newList.add(connections.get(i)) ;
-		}
-
+		ArrayList<ConnectionGene> newList;
+		newList.addAll(connections);
+		newList.add()
 		// Create copy of current Genome
 		Genome newGenome = new Genome(this.input_nodes,this.hidden_nodes,this.output_nodes,newList);
 
@@ -108,7 +95,7 @@ public final class Genome {
 	// Add NodeGene given two nodes
 	public NodeGene addNode (NodeGene n1, NodeGene n2) {
 		NodeGene n = new NodeGene(count);
-
+		this.count++;
 
 		return n;
 	}
