@@ -14,7 +14,11 @@ val project = Project(
     scalaVersion := "2.11.7",
     scalacOptions in Compile ++= Seq("-encoding", "UTF-8", "-target:jvm-1.8", "-deprecation", "-feature", "-unchecked", "-Xlog-reflective-calls", "-Xlint"),
     javacOptions in Compile ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked", "-Xlint:deprecation"),
-    libraryDependencies ++= Seq(
+    classpathTypes += "maven-plugin",
+
+
+
+libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-remote" % akkaVersion,
       "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
@@ -23,6 +27,7 @@ val project = Project(
       "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion,
       "org.scalatest" %% "scalatest" % "2.2.1" % "test",
       "io.kamon" % "sigar-loader" % "1.6.6-rev002"),
+    libraryDependencies += "org.nd4j" % "nd4j-native-platform" % "0.4.0",
     javaOptions in run ++= Seq(
       "-Xms128m", "-Xmx1024m", "-Djava.library.path=./target/native"),
     Keys.fork in run := true,
