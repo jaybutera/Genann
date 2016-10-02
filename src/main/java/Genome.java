@@ -16,7 +16,7 @@ public final class Genome {
     //Count number of genes in Genome;
     private int count;
 
-    private InnovationDB inv_db;
+    public InnovationDB inv_db;
 
     public Genome(ArrayList<NodeGene> inputs,
             ArrayList<NodeGene> hidden,
@@ -31,7 +31,7 @@ public final class Genome {
     }
 
     // Randomly generate minimal genome (perceptron structure)
-    public Genome(int inputs, int outputs,ArrayList<ConnectionGene> connections, InnovationDB inv_db) {
+    public Genome(int inputs, int outputs, ArrayList<ConnectionGene> connections, InnovationDB inv_db) {
         // Initialize empty lists
         connections = new ArrayList<ConnectionGene>();
         nodes = new ArrayList<NodeGene>();
@@ -53,7 +53,7 @@ public final class Genome {
         }
 
     }
-
+    
     private void addNode(ArrayList<NodeGene> gs) {
         NodeGene n = new NodeGene(count);
         this.nodes.add(n);
@@ -74,6 +74,7 @@ public final class Genome {
             addConnection(c.from, c.to, c.weight);
         }
     }
+
 
     // Automatic random weight
     // Returns a copy of the current Genome with a new connection added to it if it has not already been inonvated before
@@ -261,6 +262,10 @@ public final class Genome {
                 //}
             }
         }
+    }
+
+    double weightDiff(Genome g) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
   
