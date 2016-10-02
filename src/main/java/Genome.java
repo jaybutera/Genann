@@ -290,7 +290,7 @@ public final class Genome {
 
     public ConnectionGene getConnection (NodeGene in, NodeGene out) {
         for ( ConnectionGene cg : connections )
-            if (cg.from.id == in.id && cg.to.id == out.id)
+            if (cg.from.id == cg.from.id && cg.to.id == cg.to.id)
                 return cg;
         return null;
     }
