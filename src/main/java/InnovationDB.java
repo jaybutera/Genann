@@ -4,7 +4,7 @@ public class InnovationDB{
   private Hashtable<Integer,Hashtable<Integer,Integer>> connectionDB;
 	private Hashtable<Integer,Integer> splitDB;
 	InnovationDB(){
-		db = new Hashtable();
+		connectionDB = new Hashtable();
 	}
 
 	ConnectionGene createConnection(NodeGene g1, NodeGene g2, double weight){
@@ -13,13 +13,13 @@ public class InnovationDB{
 	}
 
 	int innov(int id1, int id2){
-		Hashset to = connectionDB.get(id1);
+		Hashtable<Integer,Integer> to = connectionDB.get(id1);
 		if(to == null){
-			to = new Hashset();
-			connectionsDB.put(id1,to);
+			to = new Hashtable();
+			connectionDB.put(id1,to);
 		}
 		if(!to.containsKey(id2)){
-			to.add(id2,++connectionID);
+			to.put(id2,++connectionID);
 			return connectionID;
 		}
 		return to.get(id2);

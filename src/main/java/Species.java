@@ -20,8 +20,8 @@ public class Species {
         this.inv_db = inv_db;
 
         // Initialize species in/out node standard
-        input_size  = seed.inputSize();
-        output_size = seed.outputSize();
+        input_size  = seed.input_nodes.size();
+        output_size = seed.output_nodes.size();
 
         // Initialize fitness
         this.f = f;
