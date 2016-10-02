@@ -2,7 +2,7 @@ import java.util.Hashtable;
 
 public class InnovationDB {
 
-    private int connectionID = 1;
+    private int connectionID = 0;
     private Hashtable<Integer, Hashtable<Integer, Integer>> connectionDB;
     private Hashtable<Integer, Integer> splitDB;
 
@@ -12,7 +12,7 @@ public class InnovationDB {
 
     ConnectionGene createConnection(NodeGene g1, NodeGene g2, double weight) {
         int id = innov(g1.id, g2.id);
-        return new ConnectionGene(g1, g2, weight, true, connectionID);
+        return new ConnectionGene(g1, g2, weight, true, id);
     }
 
     int innov(int id1, int id2) {
@@ -23,8 +23,8 @@ public class InnovationDB {
         }
         if (!to.containsKey(id2)) {
             to.put(id2, ++connectionID);
-            return connectionID;
         }
+//        System.out.println(id1+" "+id2+" "+to.get(id2) + " "+this);
         return to.get(id2);
 
     }

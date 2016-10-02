@@ -109,7 +109,8 @@ public class Species {
             children.add( creatures.get(i-1).g.crossover(representative.g) );
 
         // Add a final genome to keep same population size
-        children.add( creatures.get(creatures.size()-1).g.crossover(creatures.get(0).g) );
+//        System.out.println(creatures.get(creatures.size()-1).g+"\n\n"+creatures.get(0).g);
+        children.add(creatures.get(creatures.size()-1).g.crossover(creatures.get(0).g) );
 
 
 

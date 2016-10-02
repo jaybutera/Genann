@@ -26,7 +26,10 @@ public final class Genome {
         input_nodes = inputNodes();
         output_nodes = outputNodes();
         hidden_nodes = hiddenNodes();
-        inv_db.createConnection(inputNodes().get(0), outputNodes().get(0), r.nextDouble());
+        
+//        connections.add(inv_db.createConnection(inputNodes().get(r.nextInt(inputs)), outputNodes().get(r.nextInt(outputs)), r.nextDouble()));
+        
+
 
     }
 
@@ -76,7 +79,7 @@ public final class Genome {
 //        }
 
     public ArrayList<ConnectionGene> getExcess(Genome g) {
-        System.out.println(g.connections);
+//        System.out.println(g.connections);
         Integer this_max_inv = g.connections.stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
 
         return this.connections.stream().filter(s -> s.id > this_max_inv).collect(Collectors.toCollection(ArrayList::new));
@@ -162,6 +165,11 @@ public final class Genome {
     }
 
     public Genome crossover(Genome g2) {
+        if(connections.size() == 0 || g2.connections.size() == 0){
+            return clone().mutate(.1, .01);
+        }
+//        System.out.println(g2.connections+"\n\n"+g2.connections);
+
         // Create empty child, no random weights
 
         // Start from standard template
@@ -248,7 +256,6 @@ public final class Genome {
 
 //
     private void perturbLinks(ArrayList<NodeGene> input_layer, ArrayList<NodeGene> output_layer) {
-
         NodeGene inp;
         NodeGene out;
 
