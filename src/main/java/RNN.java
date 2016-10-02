@@ -14,15 +14,15 @@ public class RNN {
         /*****************************/
 
 
-        float []  inputNeurons  = new float[g.input_nodes.size()];
+        float [] inputNeurons  = new float[g.input_nodes.size()];
         float [] outputNeurons = new float[g.output_nodes.size()];
         float [] hiddenNeurons = new float[g.hiddenSize()];
 
 
 
         // Fill hidden and output neurons with hot vector 1
-        Arrays.fill(hiddenNeurons, 0.0);
-        Arrays.fill(outputNeurons, 0.0);
+        //Arrays.fill(hiddenNeurons, 0.0);
+        //Arrays.fill(outputNeurons, 0.0);
 
 
 
@@ -70,9 +70,9 @@ public class RNN {
             for (int j = 0; j < (hidden_neuron_ids.length+input_neuron_ids.length); j++)
                 outputWeights[i][j] = g.getWeight(ih_neuron_ids[j],output_neuron_ids[i]);
 
-       inputWeightsND4J = Nd4j.create(inputWeights);
-       hiddenWeightsND4J = Nd4j.create(hiddenWeights);
-       outputWeightsND4J = Nd4j.create(outputWeights);
+        inputWeightsND4J = Nd4j.create(inputWeights);
+        hiddenWeightsND4J = Nd4j.create(hiddenWeights);
+        outputWeightsND4J = Nd4j.create(outputWeights);
 
 
 
@@ -86,21 +86,17 @@ public class RNN {
         float [] inputNeurons  = new float[inputWeights[0].length]; // Kx1
         float [] hiddenNeurons = new float[hiddenWeights.length]; // Nx1
         float [] outputNeurons = new float[outputWeights.length]; // Lx1
-
         inputNeuronsNd4j = Nd4j.create(inputNeurons);
         hiddenNeuronsNd4j = Nd4j.create(hiddenNeurons);
         outputNeuronsNd4j = Nd4j.create(outputNeurons);
-
         // Fil hidden and output neurons with hot vector 1
         Arrays.fill(hiddenNeurons, 0.0);
         Arrays.fill(outputNeurons, 0.0);
-
         // Initialize weights
         this.inputWeights  = new float[inputWeights.length][inputWeights[0].length];   // NxK
         this.hiddenWeights = new float[hiddenWeights.length][hiddenWeights.length];    // NxN
         this.outputWeights = new float[outputWeights.length][outputWeights[0].length]; // Lx(K+N)
         //this.inptoOutWeights = new float[outputWeights.length][inputWeights[0].length];  // LxK
-
         // Initialize input weights
         for (int i = 0; i < inputWeights.length; i++)
             for (int j = 0; j < inputWeights[0].length; j++)
@@ -128,9 +124,9 @@ public class RNN {
         outputNeuronsNd4j = activate(  outputWeightsND4J.mmul( Nd4j.create(concat(inps, hiddenNeuronsNd4j)) ) );
 
         float [] outputNeurons = new float [inputNeuronsNd4j.size(0)];
-       for (int i = 0 ;i < inputNeuronsNd4j.size(0);i++) {
+        for (int i = 0 ;i < inputNeuronsNd4j.size(0);i++) {
 
-           outputNeurons[i] = outputNeuronsNd4j.getFloat(0,i);
+            outputNeurons[i] = outputNeuronsNd4j.getFloat(0,i);
         }
 
         return outputNeurons;
@@ -142,52 +138,36 @@ public class RNN {
         private float[][] inputs;
         private float[][] hidden;
         private float[][] outputs;
-
         public NetworkBuilder inputs (float[][] inputs) {
             this.inputs = new float[inputs.length][inputs[0].length];
-
             for (int i = 0; i < inputs.length; i++)
                 for (int j = 0; j < inputs[0].length; j++)
                     this.inputs[i][j] = inputs[i][j];
-
             return this;
         }
-
         public NetworkBuilder outputs (float[][] outputs) {
             this.outputs = new float[outputs.length][outputs[0].length];
-
             for (int i = 0; i < outputs.length; i++)
                 for (int j = 0; j < outputs[0].length; j++)
                     this.outputs[i][j] = outputs[i][j];
-
             return this;
         }
-
         public NetworkBuilder hidden (float[][] hidden) {
             this.hidden = new float[hidden.length][hidden[0].length];
-
             for (int i = 0; i < hidden.length; i++)
                 for (int j = 0; j < hidden[0].length; j++)
                     this.hidden[i][j] = hidden[i][j];
-
             return this;
         }
-
         public RNN createNetwork () {
             return new RNN (inputs, hidden, outputs);
         }
     }
-
-
-
     public String toString () {
-
         //String[][] inputWeights  = new float[this.hiddenNeurons.length][this.inputNeurons.length];   // NxK
         //String[][] hiddenWeights = new float[this.hidden.length][this.hiddenNeurons.length];    // NxN
         //String[][] outputWeights = new float[this.outputWeights.length][this.outputWeights[0].length]; // Lx(K+N)
-
         String mats = "";
-
         mats += "\nInput adjacency matrix\n\n";
         for (int i = 0; i < this.hiddenNeurons.length; i++) {
             for (int j = 0; j < this.inputNeurons.length; j++)
@@ -206,7 +186,6 @@ public class RNN {
                 mats += String.valueOf(outputWeights[i][j]) + " ";
             mats += "\n";
         }
-
         return mats;
     }
     */
@@ -300,5 +279,3 @@ public class RNN {
     private INDArray outputWeightsND4J;
 
 }
-
-
