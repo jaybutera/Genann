@@ -43,7 +43,6 @@ public class NEATPop {
 
 
     public Genome getMostFit () {
-
     }
 
 }
