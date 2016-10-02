@@ -2,16 +2,16 @@ public class NEATPop {
 
     // Constructor for first (user) population initialization
     public NEATPop(int size,
-                       double dis_rate,
-                       double inter_rate,
-                       double node_rate,
-                       double link_rate,
-                       double compat_thresh,
-                       int inputs,
-                       int outputs,
-                       Fitness f) {
+                   double dis_rate,
+                   double inter_rate,
+                   double node_rate,
+                   double link_rate,
+                   double compat_thresh,
+                   int inputs,
+                   int outputs,
+                   Fitness f) {
         // Initialize population
-        pop = new ArrayList<>();
+        pop = new ArrayList<Genome>();
         species = new ArrayList<Species>();
         this.inv_db = new Innovations();
 
@@ -43,9 +43,6 @@ public class NEATPop {
 
 
     public Genome getMostFit () {
-
-        
-
 
     }
 
