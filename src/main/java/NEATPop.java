@@ -29,7 +29,7 @@ public class NEATPop {
 
         // TODO: Don't let the initial pop be uniform like this.
         // Create an initial species for all genomes of first generation to reproduce in (randomly generate initial weights)
-        Genome g = new Genome(inputs, outputs, true, inv_db);
+        Genome g = new Genome(inputs, outputs,  inv_db);
 
         species.add( new Species(g, dis_rate, link_rate, node_rate, f, inv_db) );
 

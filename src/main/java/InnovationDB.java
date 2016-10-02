@@ -7,7 +7,7 @@ public class InnovationDB{
 		db = new Hashtable();
 	}
 
-	ConnectionGene createConnection(NodeGene g1, NodeGene g2, float weight){
+	ConnectionGene createConnection(NodeGene g1, NodeGene g2, double weight){
 		int id = innov(g1.id,g2.id);
 		return new ConnectionGene(g1,g2,weight,true,connectionID);
 	}
