@@ -218,8 +218,6 @@ public ConnectionGene getConnection (NodeGene in, NodeGene out) {
 	return null;
 }
 
-
-
 // Display phenotype of genome
 public String toString() {
 	String str = "";
