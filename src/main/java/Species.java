@@ -1,8 +1,3 @@
-/**
- * Created by devesh on 1/10/16.
- */
-import com.sun.xml.internal.ws.policy.spi.PolicyAssertionValidator;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -75,8 +70,8 @@ public class Species {
     }
 
     public double getSpeciesFit () {
-        return genomes.stream()
-                .mapToDouble(s -> adjFitness(s))
+        return creatures.stream()
+                .mapToDouble(s -> adjFitness(s.g))
                 .sum();
     }
 
@@ -154,8 +149,7 @@ public class Species {
     /***************/
 
 
-
-    private ArrayList<Genome> genomes;
+    private ArrayList<Creature> genomes;
     private Genome representative;
     private Fitness f;
     private Innovations inv_db;
