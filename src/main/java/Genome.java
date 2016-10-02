@@ -47,22 +47,24 @@ public final class Genome {
 			// Make at least one connection
 			addConnection(input_nodes.get(r.nextInt(inputs)), output_nodes.get(r.nextInt(outputs)));
 
-			// Chance to make each possible link between input and output nodes
-			// with probability .5
-			/*
-			for (int i = 0; i < inputs; i++)
-			for (int o = 0; o < outputs; o++)
-			if ( new Random().nextBoolean() )
-			addConnection(input_nodes.get(i).id, output_nodes.get(o).id);
-			*/
 			int links = new Random().nextInt(inputs*outputs-1);
 			for (int i = 0; i < links; i++)
 			addConnection();
 		}
 	}
 
-	public addNodes(ArrayList<NodeGenes> gs, int n){
+	public Genome addNode () {
+		NodeGene n = new NodeGene(count);
+		this.hidden.add(n);
+		this.nodes.add(n);
+		this.count++;
+		return n;
 
+	}
+	private void addNodes(ArrayList<NodeGenes> gs, int n){
+		for(int i = 0; i < n; i++){
+			gs.add
+		}
 	}
 	public void addConnections (ArrayList<ConnectionGene> cs) {
 		for (ConnectionGene c : cs)
@@ -92,93 +94,9 @@ public final class Genome {
 
 
 
-	// Add NodeGene given two nodes
-	public NodeGene addNode (NodeGene n1, NodeGene n2) {
-		NodeGene n = new NodeGene(count);
-		this.count++;
-
-		return n;
-	}
-
-	public void addNode () {
-		// Choose a random connection to augment
-		ConnectionGene cg = connections.get(new Random().nextInt(connections.size()-1));
-
-		addNode(cg.from, cg.to);
-	}
-
-	public double weightDiff (Genome g) {
-		ArrayList<ConnectionGene> m = this.getMatching(g);
-		// Debugging
-		if (m.size() == 0) {
-
-			// System.out.println("No matching genes between genomes:");
-			//System.out.println(g);
-			//System.out.println(this);
 
 
-			return 0.0;
-		}
-
-		double avg = 0.0;
-
-		for ( ConnectionGene c : m )
-		avg += c.weight;
-
-		return avg / m.size();
-	}
-
-	public int hiddenSize () {
-		return hidden_nodes.size();
-	}
-
-	public int inputSize () {
-		return input_nodes.size();
-	}
-
-	public int outputSize () {
-		return output_nodes.size();
-	}
-
-	public int size() {
-		return nodes.size();
-	}
-
-
-	public boolean contains (ConnectionGene c) {
-		// Look for matching innovation number
-		for ( ConnectionGene cg : connections )
-		if (cg.from.id == c.from.id && cg.to.id == c.to.id) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean contains (NodeGene n) {
-		// Look for matching innovation number
-		for ( NodeGene NodeGene : nodes )
-		if (n.id == NodeGene.id)
-		return true;
-		return false;
-	}
-
-
-
-	// Returns any excess genes from THIS genome
 	public ArrayList<ConnectionGene> getExcess (Genome g) {
-		/*
-		Genome small = getSmallest(g);
-		// Get Largest gene id for both genomes
-		Integer this_max_inv = small.connections.stream().map(s -> Integer.valueOf(s.innovation)).max(Comparator.naturalOrder()).get();
-		Integer g_max_inv    = g.connections.stream().map(s -> Integer.valueOf(s.innovation)).max(Comparator.naturalOrder()).get();
-		if (g_max_inv < this_max_inv)
-		return this.connections.stream().filter(s -> s.innovation > g_max_inv).collect(Collectors.toCollection(ArrayList::new));
-		*/
-
-		// Get largest innovation number in genome
-		Integer this_max_inv = g.connections.stream().map(s -> Integer.valueOf(s.innovation)).max(Comparator.naturalOrder()).get();
-
-		return this.connections.stream().filter(s -> s.innovation > this_max_inv).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	// Returns any disjoint genes from THIS genome
@@ -199,7 +117,7 @@ public final class Genome {
 }
 
 public ConnectionGene getConnection (NodeGene in, NodeGene out) {
-	for ( ConnectionGene cg : connections )
+	for (ConnectionGene cg : connections)
 	if (cg.from.id == in.id && cg.to.id == out.id)
 	return cg;
 	return null;
