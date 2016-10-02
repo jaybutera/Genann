@@ -7,123 +7,94 @@ public final class Genome {
 
     // These should be private
     public Random r = new Random();
-    public ArrayList<NodeGene> input_nodes;           // Input neurons
-    public ArrayList<NodeGene> output_nodes;          // Output neurons
-    public ArrayList<NodeGene> hidden_nodes;          // Hidden neurons
+    public final int INPUTS, OUTPUTS;       // Hidden neurons
     public ArrayList<NodeGene> nodes;                 // All layers of nodes concatenated
     public ArrayList<ConnectionGene> connections; // Link genes between all layers (with respect to nodes
 
-    //Count number of genes in Genome;
-    private int count;
+    ArrayList<NodeGene> input_nodes, output_nodes, hidden_nodes;
 
     public InnovationDB inv_db;
 
-    public Genome(ArrayList<NodeGene> inputs,
-            ArrayList<NodeGene> hidden,
-            ArrayList<NodeGene> outputs,
-            ArrayList<ConnectionGene> connections) {
-        this.input_nodes = inputs;
-        this.output_nodes = outputs;
-        this.hidden_nodes = hidden;
-        this.connections = connections;
-        this.count = input_nodes.size() + output_nodes.size() + hidden_nodes.size();
-
-    }
-
     // Randomly generate minimal genome (perceptron structure)
-    public Genome(int inputs, int outputs, ArrayList<ConnectionGene> connections, InnovationDB inv_db) {
-        // Initialize empty lists
-        connections = new ArrayList<ConnectionGene>();
-        nodes = new ArrayList<NodeGene>();
-        hidden_nodes = new ArrayList<NodeGene>();
+    public Genome(int inputs, int outputs, int hidden, InnovationDB inv_db) {
+        this.INPUTS = inputs;
+        this.OUTPUTS = outputs;
 
-        this.inv_db = inv_db;
-        int inv_id = 0;
-        // Initialize input neurons
-        input_nodes = new ArrayList<NodeGene>();
-
-        // Randomly generate weights if requested
-
-        // Make at least one connection
-        this.addConnection(input_nodes.get(r.nextInt(inputs)), output_nodes.get(r.nextInt(outputs)),r.nextDouble());
-
-        int links = new Random().nextInt(inputs * outputs - 1);
-        for (int i = 0; i < links; i++) {
-//            addConnection();
+        for (int i = 0; i < inputs + outputs + hidden; i++) {
+            nodes.add(new NodeGene(i + 1));
         }
-
-    }
-    
-    private void addNode(ArrayList<NodeGene> gs) {
-        NodeGene n = new NodeGene(count);
-        this.nodes.add(n);
-        gs.add(n);
-        this.count++;
-
+        input_nodes = inputNodes();
+        output_nodes = outputNodes();
+        hidden_nodes = hiddenNodes();
     }
 
-    private void addNodes(ArrayList<NodeGene> gs, int n) {
-        for (int i = 0; i < n; i++) {
-            this.addNode(gs);
-        }
+    public Genome(int inputs, int outputs, int hidden, InnovationDB inv_db, ArrayList<ConnectionGene> c) {
+        this(inputs, outputs, hidden, inv_db);
+        this.connections.addAll(c);
     }
 
-    
-    public void addConnections(ArrayList<ConnectionGene> cs) {
-        for (ConnectionGene c : cs) {
-            addConnection(c.from, c.to, c.weight);
-        }
+    private Genome(int inputs, int outputs, ArrayList<NodeGene> hidden, InnovationDB inv_db, ArrayList<ConnectionGene> connections) {
+        this(inputs, outputs, 0, inv_db, connections);
+        this.nodes.addAll(hidden);
     }
 
+    private Genome addNode(NodeGene ng) {
+        ArrayList<NodeGene> temp = new ArrayList(hidden_nodes);
+        temp.add(ng);
+        return alteredGenome(temp, connections);
+    }
+
+    private Genome addNode() {
+        return addNodes(1);
+
+    }
+
+    private Genome addNodes(int n) {
+        return alteredGenome(n, connections);
+    }
+
+    public Genome addConnection(ConnectionGene cs) {
+        ArrayList<ConnectionGene> newConnections = new ArrayList();
+        newConnections.addAll(this.connections);
+        newConnections.add(cs);
+        return alteredGenome(0, newConnections);
+    }
 
     // Automatic random weight
     // Returns a copy of the current Genome with a new connection added to it if it has not already been inonvated before
-    private ConnectionGene addConnection(NodeGene n1, NodeGene n2, double weight) {
+    private Genome addConnection(NodeGene n1, NodeGene n2, double weight) {
 
         // Get a connection gene from inv database
         ConnectionGene newConnection = inv_db.createConnection(n1, n2, weight);
 
-        // Create copy of list and add new Connection gene  to it
-        ArrayList<ConnectionGene> newList = new ArrayList<ConnectionGene>();
-        
-        newList.addAll(connections);
-        newList.add(newConnection);
-
-        // Create copy of current Genome
-        return newConnection;
+        Genome child = this.clone().addConnection(newConnection);
+        return child;
     }
 //        public ArrayList<ConnectionGene> split(NodeGene g1, NodeGene, g2){
 //            ArrayList<ConnectionGene> consplit = new ArrayList;
 //        }
-	public ArrayList<ConnectionGene> getExcess (Genome g) {
-		/*
-		Genome small = getSmallest(g);
-		// Get Largest gene id for both genomes
-		Integer this_max_inv = small.connections.stream().map(s -> Integer.valueOf(s.innovation)).max(Comparator.naturalOrder()).get();
-		Integer g_max_inv    = g.connections.stream().map(s -> Integer.valueOf(s.innovation)).max(Comparator.naturalOrder()).get();
-		if (g_max_inv < this_max_inv)
-		return this.connections.stream().filter(s -> s.innovation > g_max_inv).collect(Collectors.toCollection(ArrayList::new));
-		*/
 
-		// Get largest innovation number in genome
-		Integer this_max_inv = g.connections.stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
+    public ArrayList<ConnectionGene> getExcess(Genome g) {
 
-		return this.connections.stream().filter(s -> s.id > this_max_inv).collect(Collectors.toCollection(ArrayList::new));
-	}
+        Integer this_max_inv = g.connections.stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
 
+        return this.connections.stream().filter(s -> s.id > this_max_inv).collect(Collectors.toCollection(ArrayList::new));
+    }
 
     // Returns any disjoint genes from THIS genome
     public ArrayList<ConnectionGene> getDisjoint(Genome g) {
-        return this.connections.stream()
+        ArrayList<ConnectionGene> c = (this.connections.stream()
                 .filter(s -> !g.connections.contains(s))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toCollection(ArrayList::new)));
+        c.removeAll(getExcess(g));
+        return c;
     }
-     public ArrayList<ConnectionGene> getMatching(Genome g) {
+
+    public ArrayList<ConnectionGene> getMatching(Genome g) {
         return this.connections.stream()
                 .filter(s -> g.connections.contains(s))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
-
 
     public ConnectionGene getConnection(NodeGene in, NodeGene out) {
         for (ConnectionGene cg : connections) {
@@ -134,21 +105,44 @@ public final class Genome {
         return null;
     }
 
+    public ArrayList<NodeGene> getExcessNodes(Genome g) {
+
+        Integer this_max_inv = g.hiddenNodes().stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
+
+        return this.hiddenNodes().stream().filter(s -> s.id > this_max_inv).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    // Returns any disjoint genes from THIS genome
+
+    public ArrayList<NodeGene> getDisjointNodes(Genome g) {
+        ArrayList<NodeGene> c = (this.hiddenNodes().stream()
+                .filter(s -> !g.hiddenNodes().contains(s))
+                .collect(Collectors.toCollection(ArrayList::new)));
+        c.removeAll(getExcess(g));
+        return c;
+    }
+
+    public ArrayList<NodeGene> getMatchingNodes(Genome g) {
+        return this.hiddenNodes().stream()
+                .filter(s -> g.hiddenNodes().contains(s))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
 // Display phenotype of genome
     public String toString() {
         String str = "";
 
         str += "Genome\n-------\n";
         str += "Input NodeGene IDs:\n";
-        for (NodeGene n : input_nodes) {
+        for (NodeGene n : inputNodes()) {
             str += n.id + " ";
         }
-        str += "\nHidden NodeGene IDs: " + hidden_nodes.size() + "\n";
-        for (NodeGene n : hidden_nodes) {
+        str += "\nHidden NodeGene IDs: " + hiddenNodes().size() + "\n";
+        for (NodeGene n : hiddenNodes()) {
             str += n.id + " ";
         }
         str += "\nOutput NodeGene IDs:\n";
-        for (NodeGene n : output_nodes) {
+        for (NodeGene n : outputNodes()) {
             str += n.id + " ";
         }
         str += "\n\nConnections: " + connections.size() + "\n\n";
@@ -168,41 +162,55 @@ public final class Genome {
 
     public Genome crossover(Genome g2) {
         // Create empty child, no random weights
-        ArrayList<ConnectionGene> childConn = new ArrayList(); 
 
         // Start from standard template
         //Genome child = new Genome(g1);
         // Assign all matching connection genes
         ArrayList<ConnectionGene> matching = this.getMatching(g2);
-        childConn.addAll(matching);
-        
+
         // If parents have equal fitness, randomly match excess genes
-            Random r = new Random();
+        // Get excess from both parents
+        ArrayList<ConnectionGene> excess = this.getExcess(g2);
+        excess.addAll(g2.getExcess(this));
+        // Get disjoint from both parents
+        ArrayList<ConnectionGene> disjoint = this.getDisjoint(g2);
+        disjoint.addAll(g2.getDisjoint(this));
 
-            // Get excess from both parents
-            ArrayList<ConnectionGene> excess = this.getExcess(g2);
-            excess.addAll(g2.getExcess(this));
+        ArrayList<NodeGene> matchingNodes = this.getMatchingNodes(g2);
+        // If parents have equal fitness, randomly match excess genes
+        // Get excess from both parents
+        ArrayList<NodeGene> excessNodes = this.getExcessNodes(g2);
+        excess.addAll(g2.getExcess(this));
+        // Get disjoint from both parents
+        ArrayList<NodeGene> disjointNodes = this.getDisjointNodes(g2);
+        disjointNodes.addAll(g2.getDisjointNodes(this));
 
-            // Get disjoint from both parents
-            ArrayList<ConnectionGene> disjoint = this.getDisjoint(g2);
-            disjoint.addAll(g2.getDisjoint(this));
+        Genome child = alteredGenome(matchingNodes, matching);
 
-            // Randomly assign excess genes to child
-            for (ConnectionGene c : excess) {
-                if (r.nextBoolean()) {
-                    childConn.add(c);
-                }
+        for (ConnectionGene c : excess) {
+            if (r.nextBoolean()) {
+                child = child.addConnection(c);
             }
-            for (ConnectionGene c : disjoint) {
-                if (r.nextBoolean()) {
-                    childConn.add(c);
-                }
+        }
+        for (ConnectionGene c : disjoint) {
+            if (r.nextBoolean()) {
+                child = child.addConnection(c);
             }
-            
-        
-        Genome child = new Genome(input_nodes.size(), output_nodes.size(),childConn, inv_db);
+        }
+
+        for (NodeGene c : excessNodes) {
+            if (r.nextBoolean()) {
+                child = child.addNode(c);
+            }
+        }
+        for (NodeGene c : disjointNodes) {
+            if (r.nextBoolean()) {
+                child = child.addNode(c);
+            }
+        }
+
         // Apply mutations
-        return child.mutate(.1,.01);
+        return child.mutate(.1, .01);
 
     }
 
@@ -210,19 +218,19 @@ public final class Genome {
 
         //double weight_val_rate = .10;
         // Mutations for input to hidden connections
-        perturbLinks(input_nodes, hidden_nodes);
+        perturbLinks(inputNodes(), hiddenNodes());
 
         // Mutations for hidden to hidden connections
-        perturbLinks(hidden_nodes, hidden_nodes);
+        perturbLinks(hiddenNodes(), hiddenNodes());
 
         // Mutations for hidden to output connections
-        perturbLinks(hidden_nodes, output_nodes);
+        perturbLinks(hiddenNodes(), outputNodes());
 
         // Mutations for input to output connections
-        perturbLinks(input_nodes, output_nodes);
-
+        perturbLinks(inputNodes(), outputNodes());
+        ArrayList<ConnectionGene> muttables = new ArrayList(connections);
         // Mutate existing connections
-        for (ConnectionGene cg : connections) {
+        for (ConnectionGene cg : muttables) {
             // Chance to change weight
             if (r.nextDouble() < weight_val_rate) {
                 cg.weight = r.nextDouble();
@@ -233,7 +241,8 @@ public final class Genome {
                 cg.enabled = !cg.enabled;
             }
         }
-        return new Genome(input_nodes.size(), output_nodes.size(),connections, inv_db);
+
+        return alteredGenome(0, muttables);
     }
 
 //
@@ -255,7 +264,7 @@ public final class Genome {
                 //if ( r.nextDouble() < link_rate ) {
                 // Chance to add a connection
                 if (r.nextDouble() < .2) {
-                    addConnection(inp, out,r.nextDouble());
+                    addConnection(inp, out, r.nextDouble());
                 } else if (r.nextDouble() < .1) {
 //                    split(inp, out);
                 }
@@ -268,11 +277,34 @@ public final class Genome {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-  
+    /**
+     *
+     * @param n number of genes to add (will add to hidden)
+     * @param connections (connections to initialize gene with);
+     * @return
+     */
+    Genome alteredGenome(int n, ArrayList<ConnectionGene> connections) {
+        return new Genome(INPUTS, OUTPUTS, nodes.size() - INPUTS - OUTPUTS + n, inv_db, connections);
+    }
 
- 
-    
+    Genome alteredGenome(ArrayList<NodeGene> hidden, ArrayList<ConnectionGene> connections) {
+        return new Genome(INPUTS, OUTPUTS, hidden, inv_db, connections);
+    }
 
-  
+    protected Genome clone() {
+        return alteredGenome(0, connections);
+    }
+
+    public ArrayList<NodeGene> inputNodes() {
+        return new ArrayList(nodes.subList(0, INPUTS));
+    }
+
+    public ArrayList<NodeGene> outputNodes() {
+        return new ArrayList(nodes.subList(INPUTS, OUTPUTS));
+    }
+
+    public ArrayList<NodeGene> hiddenNodes() {
+        return new ArrayList(nodes.subList(OUTPUTS, nodes.size() - 1));
+    }
 
 }

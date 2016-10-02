@@ -38,5 +38,8 @@ public final class ConnectionGene {
     boolean isEnabled() {
         return enabled;
     }
+    boolean equals(ConnectionGene c){
+        return this.id == c.id;
+    }
 
 }
