@@ -24,7 +24,5 @@ public class InnovationDB{
 		}
 		return to.get(id2);
 
-
-
 	}
 }
