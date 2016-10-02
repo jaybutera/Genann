@@ -1,7 +1,7 @@
 public class TestGA {
     public static void main(String args[]) {
         XOR f = new XOR();
-        Population p = new Population(100, .1, .1, .1, .3, 1.3, 2, 1, f);
+        NEATPop p = new NEATPop(100, .1, .1, .1, .3, 1.3, 2, 1, f);
 
         p = p.nextGen();
         Genome init_fit = p.getMostFit();
@@ -24,6 +24,6 @@ public class TestGA {
         for (int i = 0; i < outs.length; i++)
             System.out.print(outs[i] + ", ");
         System.out.println("");
-        System.out.println("Convergence success: " + (1 - g.fitness / init_fit.fitness) + " %");
+        //System.out.println("Convergence success: " + (1 - g.fitness / init_fit.fitness) + " %");
     }
 }

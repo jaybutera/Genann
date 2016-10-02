@@ -306,5 +306,19 @@ public final class Genome {
     public ArrayList<NodeGene> hiddenNodes() {
         return new ArrayList(nodes.subList(OUTPUTS, nodes.size() - 1));
     }
+    public int hiddenSize(){
+        return hiddenNodes().size();
+    }
+    public double getWeight(int g1_id, int g2_id){
+        for(ConnectionGene c: connections){
+            if(c.to.id == g1_id){
+                if(c.from.id == g2_id){
+                    return c.weight;
+                }
+            }
+        
+        }
+        return 0;
+    }
 
 }

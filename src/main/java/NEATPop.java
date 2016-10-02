@@ -30,13 +30,13 @@ public class NEATPop {
         // TODO: Don't let the initial pop be uniform like this.
         // Create an initial species for all genomes of first generation to reproduce in (randomly generate initial weights)
         ArrayList<ConnectionGene> conn = new ArrayList();
-        Genome g = new Genome(inputs, outputs, conn, inv_db);
+        Genome g = new Genome(inputs, outputs, 0, inv_db);
 
         species.add( new Species(g, dis_rate, link_rate, node_rate, f, inv_db) );
 
         // Speciate all genomes in population
         for (int i = 1; i < size; i++) {
-            species.get(0).add(new Genome(g.input_nodes.size(),g.output_nodes.size(),g.connections,g.inv_db));
+            species.get(0).add(g.clone());
         }
     }
 
@@ -95,6 +95,50 @@ public class NEATPop {
             }
         }
     }
+    
+     public NEATPop nextGen () {
+        
+
+        // Accumulate genomes from species reproduction
+        //System.out.println("size: " + species.size());
+        //System.out.println("size of that: " + species.get(0).size());
+
+        // Get total species fitness as a parameter for reproduction
+        Double total_fit = 0.0;
+        for (Species s : species )
+            total_fit += s.updateFitness();
+
+        Species s;
+        for (int i = 0; i < species.size(); i++) {
+            s = species.get(i);
+            // Remove obsolete species
+            if (s.size() < 1)
+                species.remove(s);
+            ArrayList<Genome> genomePop = new ArrayList();
+            ArrayList<Creature> creaturePop = s.reproduce(total_fit);
+            for(Creature c: creaturePop){
+                genomePop.add(c.g);
+            }
+            pop.addAll(genomePop);
+            s.flush(); // Remove all genomes for respeciation (NEAT style)
+        }
+
+        /*
+        System.out.println("Node innovation num: " + inv_db.getNodeInvNum());
+        System.out.println("Conn innovation num: " + inv_db.getConnInvNum());
+        */
+
+        return new NEATPop(pop,
+                              dis_rate,
+                              inter_rate,
+                              node_rate,
+                              link_rate,
+                              compatThresh,
+                              species,
+                              inv_db,
+                              f);
+    }
+
     public Genome getMostFit () {
 
        Creature cret = species.get(0).getMostFit();
