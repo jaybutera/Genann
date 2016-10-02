@@ -6,10 +6,10 @@ public class Species {
                     double dis_rate,
                     double link_rate,
                     double node_rate,
-                    PolicyAssertionValidator.Fitness f,
+                    Fitness f,
                     Innovations inv_db) {
-        genomes = new ArrayList<Genome>();
-        genomes.add(seed);
+        creatures = new ArrayList<Creature>();
+        creatures.add( new Creature(seed) );
 
         // Init mutation params
         this.dis_rate  = dis_rate;
@@ -62,11 +62,11 @@ public class Species {
     }
 
     public void add (Genome g) {
-        genomes.add(g);
+        creatures.add(g);
     }
 
     public void flush () {
-        genomes.clear();
+        creatures.clear();
     }
 
     public double getSpeciesFit () {
@@ -76,40 +76,40 @@ public class Species {
     }
 
     public ArrayList<Genome> reproduce (double total_fit) {
-        // Return empty if no genomes in species
-        if ( genomes.isEmpty() )
-            return genomes;
+        // Return empty if no creatures in species
+        if ( creatures.isEmpty() )
+            return creatures;
 
         ArrayList<Genome> children = new ArrayList<Genome>();
 
         // Determine size of next generation species population
         updateFitness();
-        int pop_size = (int) Math.round(updateFitness() * genomes.size() / total_fit);
+        int pop_size = (int) Math.round(updateFitness() * creatures.size() / total_fit);
         System.out.println("New species size: " + pop_size);
 
         // TODO: Initial reproduction algorithm, use factorial formulation in
         // future.
         // Mate each adjacent genome
         for (int i = 1; i < pop_size; i++)
-            children.add( genomes.get(i-1).crossover(representative) );
+            children.add( creatures.get(i-1).crossover(representative) );
 
         // Add a final genome to keep same population size
-        children.add( genomes.get(genomes.size()-1).crossover(genomes.get(0) ) );
+        children.add( creatures.get(creatures.size()-1).crossover(creatures.get(0) ) );
 
 
 
-        // Get rep from genomes to guide next generation speciation
+        // Get rep from creatures to guide next generation speciation
         updateRep();
 
         // Replace pop with next generation
-        genomes = children;
+        creatures = children;
 
-        return genomes;
+        return creatures;
     }
 
     // Find new representative for species
     public Genome updateRep () {
-        for ( Genome g : genomes )
+        for ( Genome g : creatures )
             if (adjFitness(g) > adjFitness(representative))
                 representative = g;
 
@@ -117,7 +117,7 @@ public class Species {
     }
 
     public Double updateFitness () {
-        avg_fit = genomes.stream().map(g -> g.fitness)
+        avg_fit = creatures.stream().map(g -> g.fitness)
                 .mapToDouble(Double::doubleValue)
                 .sum();
 
@@ -127,7 +127,7 @@ public class Species {
 
 
     public double adjFitness (Genome g) {
-        return g.fitness / genomes.size();
+        return g.fitness / creatures.size();
     }
 
 
@@ -141,7 +141,7 @@ public class Species {
     }
 
     public int size () {
-        return genomes.size();
+        return creatures.size();
     }
 
     /***************/
@@ -149,8 +149,8 @@ public class Species {
     /***************/
 
 
-    private ArrayList<Creature> genomes;
-    private Genome representative;
+    private ArrayList<Creature> creatures;
+    private Creature representative;
     private Fitness f;
     private Innovations inv_db;
 
