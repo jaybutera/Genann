@@ -1,31 +1,43 @@
-import java.util.Hashtable;
+import java.util.ArrayList;
 
 public class InnovationDB {
 
-    private int connectionID = 0;
-    private Hashtable<Integer, Hashtable<Integer, Integer>> connectionDB;
-    private Hashtable<Integer, Integer> splitDB;
+    private ArrayList<ConnectionInv> connections;
+    private ArrayList<NodeInv> nodes;
 
-    InnovationDB() {
-        connectionDB = new Hashtable();
-    }
+    private int nextConnId;
+    private int nextNodeId;
 
-    ConnectionGene createConnection(NodeGene g1, NodeGene g2, double weight) {
-        int id = innov(g1.id, g2.id);
+    ConnectionGene getConnection (NodeGene g1, NodeGene g2, double weight) {
         return new ConnectionGene(g1, g2, weight, true, id);
     }
 
-    int innov(int id1, int id2) {
-        Hashtable<Integer, Integer> to = connectionDB.get(id1);
-        if (to == null) {
-            to = new Hashtable();
-            connectionDB.put(id1, to);
-        }
-        if (!to.containsKey(id2)) {
-            to.put(id2, ++connectionID);
-        }
-//        System.out.println(id1+" "+id2+" "+to.get(id2) + " "+this);
-        return to.get(id2);
 
+    /********************************/
+    // Container innovation classes //
+    /********************************/
+
+    class ConnectionInv {
+        public ConnectionInv (ConnectionGene c) {
+            this.c  = c;
+        }
+
+        public boolean equals (ConnectionGene c) {
+            return (c.from == this.c.from && c.to == this.c.to);
+        }
+
+        final public ConnectionGene c;
+    }
+
+    class NodeInv {
+        final public NodeGene n;
+        final public ConnectionGene from;
+        final public ConnectionGene to;
+
+        public NodeInv (NodeGene n, NodeGene in, NodeGene out) {
+            this.n = n;
+            this.in = in;
+            this.out = out;
+        }
     }
 }

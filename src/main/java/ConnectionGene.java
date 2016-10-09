@@ -1,7 +1,7 @@
 public final class ConnectionGene {
 
-    NodeGene from;
-    NodeGene to;
+    public NodeGene from;
+    public NodeGene to;
     double weight;
     boolean enabled;
     int id;
@@ -23,7 +23,7 @@ public final class ConnectionGene {
         return new ConnectionGene(this.from, this.to, this.weight, !this.enabled, this.id);
     }
 
-    ConnectionGene endable() {
+    ConnectionGene enable() {
         return new ConnectionGene(this.from, this.to, this.weight, true, this.id);
     }
 
