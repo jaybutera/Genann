@@ -7,8 +7,6 @@ public class InnovationDB {
     private ArrayList<ConnectionInv> connections;
     private ArrayList<NodeInv> nodes;
 
-    private int nextConnId;
-    private int nextNodeId;
 
     private  int conInvCount = 0;
     private  int nodeInvCount = 0;
@@ -37,6 +35,7 @@ public class InnovationDB {
 
 
     // Assume original connection is taken care of
+    // Base add node class
     NodeInnovation addNode (NodeGene g1, NodeGene g2) {
 
 
@@ -60,6 +59,14 @@ public class InnovationDB {
 
         return new NodeInnovation(newGene,c1,c2 );
 
+
+    }
+
+    // Add floating node ; Probably can come up with better way to implement
+    NodeGene addFloatingNode () {
+
+
+        return new NodeGene(incrementNodeCount());
 
     }
 
