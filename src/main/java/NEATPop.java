@@ -30,14 +30,12 @@ public class NEATPop {
         // TODO: Don't let the initial pop be uniform like this.
         // Create an initial species for all genomes of first generation to reproduce in (randomly generate initial weights)
         ArrayList<ConnectionGene> conn = new ArrayList();
-        Genome g = new Genome(inputs, outputs, 0, inv_db);
+        Genome g = new Genome(inputs, outputs, false, inv_db);
         species.add( new Species(g, dis_rate, link_rate, node_rate, f, inv_db) );
 
-        // Speciate all genomes in population
+        // Copy seed genome, all go into one species
         for (int i = 1; i < size; i++) {
-            
-            g = g.clone();
-            species.get(0).add(g);
+            species.get(0).add( new Genome(g) );
         }
     }
 

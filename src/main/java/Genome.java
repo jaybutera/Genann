@@ -39,7 +39,7 @@ public final class Genome {
         ArrayList<NodeGene> temp_input_nodes = new ArrayList<NodeGene>();
         ArrayList<NodeGene> temp_hidden_nodes = new ArrayList<NodeGene>();
         ArrayList<NodeGene> temp_output_nodes = new ArrayList<NodeGene>();
-        ArrayList<ConnectionGene> temp_connection_nodes = new ArrayList<ConnectionGene>();
+        ArrayList<ConnectionGene> temp_connections = new ArrayList<ConnectionGene>();
 
 
         this.inv_db = inv_db;
@@ -62,13 +62,19 @@ public final class Genome {
             Random r = new Random();
 
             // Make at least one connection
-            inv_db.addConnection(input_nodes.get(r.nextInt(inputs)), output_nodes.get(r.nextInt(outputs)));
+            temp_connections.add( inv_db.addConnection(input_nodes.get(r.nextInt(inputs)), output_nodes.get(r.nextInt(outputs))) );
 
             // Too much work to implement now; Need to though to improve diversity of initial population
             //int links = new Random().nextInt(inputs*outputs-1);
             //for (int i = 0; i < links; i++)
             //    addConnection();
         }
+
+		// Init class members
+		connections = temp_connections;
+		input_nodes = temp_input_nodes;
+		hidden_nodes = temp_hidden_nodes;
+		output_nodes = temp_output_nodes;
     }
 
     // Copy constructor

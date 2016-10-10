@@ -74,16 +74,12 @@ public class Species {
 
 
     public Creature getMostFit () {
-
         Creature cret = creatures.get(0);
-        for (Creature c : creatures) {
 
-            if (cret.fitness< c.fitness) {
-
-
+        // Find max
+        for (Creature c : creatures)
+            if (cret.fitness< c.fitness)
                 cret = c;
-            }
-        }
 
         return cret;
     }
