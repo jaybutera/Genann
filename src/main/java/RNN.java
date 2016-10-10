@@ -16,9 +16,10 @@ public class RNN {
                                     .filter(n -> n.in.type == NodeType.INPUT)
                                     .toArray(Double[]::new);
         */
+
         inputNeurons  = new Double[g.input_nodes.size()];
         outputNeurons = new Double[g.output_nodes.size()];
-        hiddenNeurons = new Double[g.hiddenSize()];
+        hiddenNeurons = new Double[g.hidden_nodes.size()];
 
         // Fill hidden and output neurons with hot vector 1
         Arrays.fill(hiddenNeurons, 0.0);
@@ -34,7 +35,7 @@ public class RNN {
         // (used to create weight matrices)
         int[] input_neuron_ids  = new int[g.input_nodes.size()];
         int[] output_neuron_ids = new int[g.output_nodes.size()];
-        int[] hidden_neuron_ids = new int[g.hiddenSize()];
+        int[] hidden_neuron_ids = new int[g.hidden_nodes.size()];
 
         for (int i = 0; i < g.input_nodes.size(); i++)
             input_neuron_ids[i] = g.input_nodes.get(i).id;
@@ -49,9 +50,9 @@ public class RNN {
         /* Initialize weight matrices */
         /******************************/
 
-        inputWeights  = new Double[g.hiddenSize()][g.input_nodes.size()];                       // N x K
-        hiddenWeights = new Double[g.hiddenSize()][g.hiddenSize()];                             // N x N
-        outputWeights = new Double[g.output_nodes.size()][g.input_nodes.size()+g.hiddenSize()]; // L x (N+K)
+        inputWeights  = new Double[g.hidden_nodes.size()][g.input_nodes.size()];                       // N x K
+        hiddenWeights = new Double[g.hidden_nodes.size()][g.hidden_nodes.size()];                             // N x N
+        outputWeights = new Double[g.output_nodes.size()][g.input_nodes.size()+g.hidden_nodes.size()]; // L x (N+K)
 
         // Input matrix
         for (int i = 0; i < hidden_neuron_ids.length; i++)
