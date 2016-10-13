@@ -94,7 +94,17 @@ public class Species {
 
         // Determine size of next generation species population
         getAvgFitness();
-        int pop_size = (int) Math.round(getAvgFitness() * creatures.size() / total_fit);
+
+        int pop_size;
+        if (total_fit > getAvgFit()) {
+
+            pop_size = (int) Math.ceil(creatures.size() * 1.1);
+        }
+        else {
+
+            pop_size = (int) Math.ceil(creatures.size() * 0.9);
+        }
+
         System.out.println("New species size: " + pop_size);
 
         // TODO: Initial reproduction algorithm, use factorial formulation in
@@ -164,7 +174,7 @@ public class Species {
     /***************/
 
 
-    private ArrayList<Creature> creatures;
+    public ArrayList<Creature> creatures;
     private Creature representative;
     private Fitness f;
     private InnovationDB inv_db;
