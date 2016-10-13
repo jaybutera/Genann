@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Species {
     public Species (final Genome seed,
@@ -94,8 +93,8 @@ public class Species {
         ArrayList<Genome> children = new ArrayList<Genome>();
 
         // Determine size of next generation species population
-        updateFitness();
-        int pop_size = (int) Math.round(updateFitness() * creatures.size() / total_fit);
+        getAvgFitness();
+        int pop_size = (int) Math.round(getAvgFitness() * creatures.size() / total_fit);
         System.out.println("New species size: " + pop_size);
 
         // TODO: Initial reproduction algorithm, use factorial formulation in
@@ -131,15 +130,13 @@ public class Species {
         return representative;
     }
 
-    public Double updateFitness () {
-        avg_fit = creatures.stream().map(c -> {
-//            System.out.println(g.fitness);
-            return c.fitness;
-                })
+    public Double getAvgFitness() {
+        avg_fit = creatures.stream().map(c -> c.fitness)
                 .mapToDouble(Double::doubleValue)
                 .sum();
 
-        return avg_fit;
+
+        return avg_fit/creatures.size();
     }
 
 
