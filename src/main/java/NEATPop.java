@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class NEATPop {
 
@@ -23,7 +24,7 @@ public class NEATPop {
         this.node_rate  = node_rate;
         this.link_rate  = link_rate;
         this.compatThresh= compat_thresh;
-
+        this.pop = new ArrayList<Genome>();
         this.inputs  = inputs;
         this.outputs = outputs;
 
@@ -58,6 +59,17 @@ public class NEATPop {
         this.link_rate  = link_rate;
         this.compatThresh= compat_thresh;
         this.species    = species;
+
+        this.pop = (species.stream()
+                .map (s -> s.creatures)
+                .forEach(c -> c.g)
+                .collect(Collectors.toCollection(ArrayList::new)));
+
+        for (Species s : species) {
+
+            pop.addAll(s.creatures);
+
+        }
 
         // Speciate all genomes in population
         for ( Genome g : pop ) {
@@ -94,7 +106,20 @@ public class NEATPop {
             }
         }
     }
-    
+
+
+    public Double getAvgSpeciesFitness () {
+
+        // Get total species fitness as a parameter for reproduction
+        Double total_fit = 0.0;
+        for (Species s : species )
+            total_fit += s.getAvgFitness();
+        total_fit = total_fit /  species.size();
+        return total_fit;
+
+    }
+
+
      public NEATPop nextGen () {
         
 
@@ -102,10 +127,7 @@ public class NEATPop {
         //System.out.println("size: " + species.size());
         //System.out.println("size of that: " + species.get(0).size());
 
-        // Get total species fitness as a parameter for reproduction
-        Double total_fit = 0.0;
-        for (Species s : species )
-            total_fit += s.updateFitness();
+        Double total_fit = getAvgSpeciesFitness();
 
         Species s;
         for (int i = 0; i < species.size(); i++) {
