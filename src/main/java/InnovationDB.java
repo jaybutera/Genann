@@ -11,6 +11,13 @@ public class InnovationDB {
     private  int conInvCount = 0;
     private  int nodeInvCount = 0;
 
+    InnovationDB () {
+
+        this.connections = new ArrayList<ConnectionInv>();
+        this.nodes = new ArrayList<NodeInv>();
+
+    }
+
     // default addconnection function
     ConnectionGene addConnection (NodeGene g1, NodeGene g2, double weight) {
 
@@ -39,16 +46,19 @@ public class InnovationDB {
     NodeInnovation addNode (NodeGene g1, NodeGene g2) {
 
 
-        // Checks if node already exists using nodeInv list
-        for (NodeInv nodeinv: nodes) {
+        if (!nodes.isEmpty()) {
 
-            if (nodeinv.equals(g1,g2)) {
-                NodeGene newGene = nodeinv.n;
-                return new NodeInnovation(nodeinv.n, nodeinv.in,nodeinv.out );
+            // Checks if node already exists using nodeInv list
+
+            for (NodeInv nodeinv : nodes) {
+
+                if (nodeinv.equals(g1, g2)) {
+                    NodeGene newGene = nodeinv.n;
+                    return new NodeInnovation(nodeinv.n, nodeinv.in, nodeinv.out);
+                }
+
             }
-
         }
-
         NodeGene  newGene = new NodeGene(incrementNodeCount());
 
         ConnectionGene c1 = addConnection(g1,newGene);
