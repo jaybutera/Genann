@@ -21,12 +21,14 @@ public final class Genome {
     public Genome (ArrayList<NodeGene> inputs,
                    ArrayList<NodeGene> hidden,
                    ArrayList<NodeGene> outputs,
-                   ArrayList<ConnectionGene> connections) {
+                   ArrayList<ConnectionGene> connections,
+                   InnovationDB inv_db) {
 
         hidden_nodes = new ArrayList<NodeGene>(hidden);
         input_nodes  = new ArrayList<NodeGene>(inputs);
         output_nodes = new ArrayList<NodeGene>(outputs);
         connections = new ArrayList<ConnectionGene>(connections);
+        this.inv_db = inv_db;
 
     }
 
@@ -116,6 +118,11 @@ public final class Genome {
 
 
     public ArrayList<ConnectionGene> getExcess(Genome g) {
+        System.out.println(connections.size());
+        if (connections.size() == 0) {
+
+            return new ArrayList<ConnectionGene>();
+        }
 
         Integer this_max_inv = g.connections.stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
 
@@ -145,6 +152,11 @@ public final class Genome {
 
 
     public ArrayList<NodeGene> getExcessNodes(Genome g) {
+
+        if (hidden_nodes.size() == 0) {
+
+            return new ArrayList<NodeGene>();
+        }
 
         Integer this_max_inv = g.hidden_nodes.stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
 
@@ -290,7 +302,7 @@ public final class Genome {
         }
 
 
-        return new Genome(genome.input_nodes,genome.hidden_nodes,genome.output_nodes,mutables);
+        return new Genome(genome.input_nodes,genome.hidden_nodes,genome.output_nodes,mutables,this.inv_db);
     }
 
     // Used to add new random Connections
@@ -316,7 +328,7 @@ public final class Genome {
             }
         }
 
-        return new Genome(g.input_nodes, new_nodes, g.output_nodes, new_connections);
+        return new Genome(g.input_nodes, new_nodes, g.output_nodes, new_connections,this.inv_db);
     }
 
     double weightDiff(Genome g) {
@@ -431,7 +443,7 @@ public final class Genome {
 
         public Genome createGenome () {
 
-            return new Genome (inputs,hiddens,outputs,connections);
+            return new Genome (inputs,hiddens,outputs,connections,this.inv_db);
 
 
         }
