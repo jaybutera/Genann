@@ -15,7 +15,7 @@ public class NEATPop {
                    Fitness f) {
 
 
-        species = new ArrayList<Species>();
+        this.species = new ArrayList<Species>();
         this.inv_db = new InnovationDB();
 
         this.f = f;
@@ -30,7 +30,6 @@ public class NEATPop {
 
         // TODO: Don't let the initial pop be uniform like this.
         // Create an initial species for all genomes of first generation to reproduce in (randomly generate initial weights)
-        ArrayList<ConnectionGene> conn = new ArrayList();
         Genome g = new Genome(inputs, outputs, false, inv_db);
         species.add( new Species(g, dis_rate, link_rate, node_rate, f, inv_db) );
 
@@ -60,17 +59,6 @@ public class NEATPop {
         this.compatThresh= compat_thresh;
         this.species    = species;
 
-        this.pop = (species.stream()
-                .map (s -> s.creatures)
-                .forEach(c -> c.g)
-                .collect(Collectors.toCollection(ArrayList::new)));
-
-        for (Species s : species) {
-
-            pop.addAll(s.creatures);
-
-        }
-
         // Speciate all genomes in population
         for ( Genome g : pop ) {
             //System.out.print("|" + g.size());
@@ -90,6 +78,7 @@ public class NEATPop {
             // Search for an appropriate species
             do {
                 g_compat = species.get(i).compatibility(g);
+                System.out.println("Compat: " + g_compat);
                 i++;
             } while (g_compat > compatThresh && i < species.size());
 
@@ -121,10 +110,8 @@ public class NEATPop {
 
 
      public NEATPop nextGen () {
-        
-
         // Accumulate genomes from species reproduction
-        //System.out.println("size: " + species.size());
+        System.out.println("Number of species: " + species.size());
         //System.out.println("size of that: " + species.get(0).size());
 
         Double total_fit = getAvgSpeciesFitness();
@@ -135,14 +122,15 @@ public class NEATPop {
             // Remove obsolete species
             if (s.size() < 1)
                 species.remove(s);
-            
+
             ArrayList<Genome> genomePop = new ArrayList();
             ArrayList<Creature> creaturePop = s.reproduce(total_fit);
             for(Creature c: creaturePop){
                 genomePop.add(c.g);
             }
 //            s.reproduce(total_fit).stream()
-            pop.addAll(genomePop);
+            //pop.addAll(genomePop);
+            pop = genomePop;
             s.flush(); // Remove all genomes for respeciation (NEAT style)
         }
 
@@ -151,6 +139,7 @@ public class NEATPop {
         System.out.println("Conn innovation num: " + inv_db.getConnInvNum());
         */
 
+        System.out.println("Pop size:" + pop.size());
         return new NEATPop(pop,
                               dis_rate,
                               inter_rate,

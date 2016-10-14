@@ -118,11 +118,9 @@ public final class Genome {
 
 
     public ArrayList<ConnectionGene> getExcess(Genome g) {
-        System.out.println(connections.size());
-        if (connections.size() == 0) {
-
+        //System.out.println(connections.size());
+        if (connections.size() == 0)
             return new ArrayList<ConnectionGene>();
-        }
 
         Integer this_max_inv = g.connections.stream().map(s -> Integer.valueOf(s.id)).max(Comparator.naturalOrder()).get();
 
@@ -133,6 +131,9 @@ public final class Genome {
 
     // Returns any disjoint genes from THIS genome
     public ArrayList<ConnectionGene> getDisjoint(Genome g) {
+        if (connections.size() == 0)
+            return new ArrayList<ConnectionGene>();
+
         ArrayList<ConnectionGene> c = (this.connections.stream()
                 .filter(s -> !g.connections.contains(s))
                 .collect(Collectors.toCollection(ArrayList::new)));
@@ -144,6 +145,9 @@ public final class Genome {
 
 
     public ArrayList<ConnectionGene> getMatching(Genome g) {
+        if (connections.size() == 0)
+            return new ArrayList<ConnectionGene>();
+
         return this.connections.stream()
                 .filter(s -> g.connections.contains(s))
                 .collect(Collectors.toCollection(ArrayList::new));

@@ -7,15 +7,15 @@ public class TestGA {
         NEATPop p = new NEATPop(100, .1, .1, .1, .3, 1.3, 2, 1, f);
 
         p = p.nextGen();
-        Genome init_fit = p.getMostFit();
+        //Genome init_fit = p.getMostFit();
 
         // Run through 100 generations
         for (int i = 0; i < 5; i++) {
             System.out.println("Running generation " + (i+1) + "...");
             //System.out.println("Number of species: " + p.getNumSpecies());
             p = p.nextGen();
-            System.out.println("Most fit genome:\n\n" + p.getMostFit());
-            System.out.println("Top fitness: " + f.simulate( new RNN(p.getMostFit()) ));
+            //System.out.println("Most fit genome:\n\n" + p.getMostFit());
+            //System.out.println("Top fitness: " + f.simulate( new RNN(p.getMostFit()) ));
         }
 
         Genome g = p.getMostFit();

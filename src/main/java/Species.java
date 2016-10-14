@@ -45,6 +45,13 @@ public class Species {
         else
             N = representative.g.connections.size();
 
+        // Temp test
+        if (N < 1) return 1.5;
+
+        System.out.println("Excess: " + g.getExcess(representative.g).size());
+        System.out.println("Dis: " + g.getDisjoint(representative.g).size());
+        System.out.println("Diff: " + g.weightDiff(representative.g));
+
         double x =   (c1 * g.getExcess(representative.g).size()) / N
                 + (c2 * g.getDisjoint(representative.g).size()) / N
                 +  c3 * g.weightDiff(representative.g);
@@ -59,6 +66,7 @@ public class Species {
 
     public void add (Genome g) {
         creatures.add(new Creature(g));
+        representative = updateRep();
     }
 
     public void flush () {
@@ -85,7 +93,6 @@ public class Species {
 
     public ArrayList<Creature> reproduce (double total_fit) {
 
-        ArrayList<Creature> newCreatures = new ArrayList<Creature>();
         // Return empty if no creatures in species
         if ( creatures.isEmpty() )
             return new ArrayList<Creature>();
@@ -96,14 +103,10 @@ public class Species {
         getAvgFitness();
 
         int pop_size;
-        if (total_fit > getAvgFit()) {
-
-            pop_size = (int) Math.ceil(creatures.size() * 1.1);
-        }
-        else {
-
+        if (total_fit > getAvgFit())
+            pop_size = (int) Math.ceil(creatures.size() * 1.1;
+        else
             pop_size = (int) Math.ceil(creatures.size() * 0.9);
-        }
 
         System.out.println("New species size: " + pop_size);
 
@@ -117,18 +120,14 @@ public class Species {
 //        System.out.println(creatures.get(creatures.size()-1).g+"\n\n"+creatures.get(0).g);
         children.add(creatures.get(creatures.size()-1).g.crossover(creatures.get(0).g) );
 
-
+        flush(); // Remove all old creatures
+        for (Genome g: children)
+            creatures.add(new Creature(g));
 
         // Get rep from creatures to guide next generation speciation
-        updateRep();
+        representative = updateRep();
 
-        for (Genome g: children) {
-
-            newCreatures.add(new Creature(g));
-
-        }
-
-        return newCreatures;
+        return creatures;
     }
 
     // Find new representative for species
