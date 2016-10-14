@@ -1,3 +1,6 @@
+import Genetics.InnovationDB;
+import Genetics.ConnectionGene;
+import Genetics.Genome;
 import java.util.ArrayList;
 
 public class NEATPop {

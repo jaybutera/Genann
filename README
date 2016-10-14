@@ -1,0 +1,35 @@
+ Purpose:
+    Innovation database should not implement incrementing nodes
+    Genome should be made of chromosomes
+    chromosomes implement crossover, mutation
+    Genome facilitates crossover of properly indexed chromosomes 
+        ie (*=crossover):
+            genome1 [x,y]
+            genome2 [w,z]
+            child   [x*w, y*z]
+
+Gene:
+  int id
+  boolean enabled
+  boolean equals(Gene dg) return this.id == dg.id;
+Chromosome:
+  ArrayList<Gene> genes;
+  /*
+  all genes in parent2 that are higher than the highest matching are excess
+  genes are disjoint if not matching but not excess
+  [1,2,3,4,5,6]
+  [1,2,3,4,6,7]
+  
+  matching: 1,2,3,4,6
+  excess: 7
+  disjoint: 5
+  */
+  ArrayList<Gene> matching(Chromosome compare); 
+  Chromosome crossover(Chromosome parent2);
+  Chromosome mutate();
+
+Genome:
+  Genome(ArrayList<Chromosome>)
+  ArrayList<Chromosome> chromosomes
+  Genome crossover(Genome parent2); // crossover genome
+  Genome mutate(Double rate); 

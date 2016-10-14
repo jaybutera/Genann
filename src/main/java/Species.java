@@ -1,3 +1,5 @@
+import Genetics.InnovationDB;
+import Genetics.Genome;
 import java.util.ArrayList;
 import java.util.Random;
 

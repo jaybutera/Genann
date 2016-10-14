@@ -1,3 +1,5 @@
+
+
 public class XOR extends Fitness {
     public Double simulate (RNN n) {
         outs = new Double[outData.length][1];

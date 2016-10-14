@@ -1,3 +1,6 @@
+
+import Genetics.Genome;
+
 public class Creature {
     Creature(Genome g) {
         this.g = g;
