@@ -13,6 +13,9 @@ public final class Genome {
     private int nodes = 1;
     private InnovationDB db;
     
+    public Genome(int nodes, InnovationDB db){
+        this(new Chromosome(), nodes, db);
+    }
     public Genome(Chromosome<ConnectionGene> chromosome, int nodes, InnovationDB db) {
        this.chromosome = chromosome;
        this.nodes = nodes;

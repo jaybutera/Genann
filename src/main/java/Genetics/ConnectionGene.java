@@ -36,6 +36,8 @@ public final class ConnectionGene extends Gene{
         return id+":"+Arrays.toString(vect);
         
     }
+    //used inside InnovationDB
+    //assigns 2 genes, with same start and end, same hash
     @Override
     public int hashCode() {
         return Arrays.hashCode(vect); //To change body of generated methods, choose Tools | Templates.

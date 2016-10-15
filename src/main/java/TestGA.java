@@ -1,8 +1,8 @@
 import Genetics.ConnectionGene;
-import Genetics.Chromosome;
 import Genetics.Genome;
 import Genetics.InnovationDB;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -10,29 +10,37 @@ import java.util.function.Supplier;
 public class TestGA {
 
     public static void main(String args[]) {
-        int nodes = 6;
-        int inputs = 3;
-        int outputs = 3;
-        InnovationDB db = new InnovationDB();
 
-        Chromosome<ConnectionGene> connections = new Chromosome();
+        InnovationDB db = new InnovationDB();
         ArrayList<Genome> pop = new ArrayList();
         
-        Supplier<Genome> factory = () -> {
-            final Random r = new Random();
-            final ArrayList<ConnectionGene> init = new ArrayList();
-            Genome g = new Genome(connections, nodes, db);
-            for (int i = 0; i < inputs; i++) {
-                for (int j = outputs; j < nodes; j++) {
-                    g = g.addConnection(i, j, r.nextDouble());
+        //Tests if innovation numbers are reliable,
+        //ids of connections from identicle genomes are the same
+        // ie: Connection(1->2) == OtherConnection(1->2)
+        //      therefore the id of the 2 connections are the same
+        Supplier<Boolean> dbTest = () -> {
+            System.out.print("Non-Duplication: ");
+            int nodes = 6;
+            int inputs = 3;
+            int outputs = 3;
+            Function<InnovationDB,Genome> factory = (invdb) -> {
+                final Random r = new Random();
+                final ArrayList<ConnectionGene> init = new ArrayList();
+                Genome g = new Genome(nodes, invdb);
+                for (int i = 0; i < inputs; i++) {
+                    for (int j = outputs; j < nodes; j++) {
+                        g = g.addConnection(i, j, r.nextDouble());
+                    }
                 }
-            }
-            return g;
+                return g;
+            };
+            pop.add(factory.apply(db));
+            InnovationDB db2 = new InnovationDB((Hashtable)db.getDB().clone());
+            pop.add(factory.apply(db2));
+            return db.equals(db2);
         };
-        pop.add(factory.get());
-        pop.add(factory.get());
-
-        pop.forEach((e) -> System.out.println(e));
+        System.out.println(dbTest.get());
+        
 
     }
 //    public static void XOR(){
