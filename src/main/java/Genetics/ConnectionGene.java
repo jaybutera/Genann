@@ -1,5 +1,6 @@
 package Genetics;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -32,12 +33,26 @@ public final class ConnectionGene extends Gene{
 
     @Override
     public String toString(){
-        return String.valueOf(this.weight);
+        return id+":"+Arrays.toString(vect);
+        
     }
-    public boolean equals(ConnectionGene g){
-        System.out.println("Calling in conn");
-        return g.vect == this.vect;
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(vect); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ConnectionGene other = (ConnectionGene) obj;
+        return Arrays.equals(this.vect, other.vect);
+    }
+    
     
 
 }

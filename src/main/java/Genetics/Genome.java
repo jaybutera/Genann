@@ -28,6 +28,8 @@ public final class Genome {
         Chromosome<ConnectionGene> conns = chromosome.add(conn);
         return new Genome(conns, nodes, db);
     }
-
-
+    public String toString(){
+        return nodes+", "+chromosome.toString();
+    }
+   
 }

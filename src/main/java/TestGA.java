@@ -1,26 +1,39 @@
-
 import Genetics.ConnectionGene;
 import Genetics.Chromosome;
+import Genetics.Genome;
+import Genetics.InnovationDB;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class TestGA {
+
     public static void main(String args[]) {
         int nodes = 6;
         int inputs = 3;
         int outputs = 3;
-        int inv = 0;
-        Chromosome<ConnectionGene> connections;
-        Random r = new Random();
-        ArrayList<ConnectionGene> init = new ArrayList();
-        for(int i = 0; i < inputs; i++){
-            for(int j = 0; j < outputs; j++){
-                init.add(new ConnectionGene(i,j,r.nextDouble(),true, inv++));
+        InnovationDB db = new InnovationDB();
+
+        Chromosome<ConnectionGene> connections = new Chromosome();
+        ArrayList<Genome> pop = new ArrayList();
+        
+        Supplier<Genome> factory = () -> {
+            final Random r = new Random();
+            final ArrayList<ConnectionGene> init = new ArrayList();
+            Genome g = new Genome(connections, nodes, db);
+            for (int i = 0; i < inputs; i++) {
+                for (int j = outputs; j < nodes; j++) {
+                    g = g.addConnection(i, j, r.nextDouble());
+                }
             }
-        }
-        connections = new Chromosome(init);
-        System.out.println(init);
+            return g;
+        };
+        pop.add(factory.get());
+        pop.add(factory.get());
+
+        pop.forEach((e) -> System.out.println(e));
+
     }
 //    public static void XOR(){
 //        XOR f = new XOR();
@@ -49,5 +62,5 @@ public class TestGA {
 //        System.out.println("");
 //        //System.out.println("Convergence success: " + (1 - g.fitness / init_fit.fitness) + " %");
 //    }
-    
+
 }
