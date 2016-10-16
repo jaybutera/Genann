@@ -1,4 +1,5 @@
 import Genetics.ConnectionGene;
+import Genetics.Gene;
 import Genetics.Genome;
 import Genetics.InnovationDB;
 import java.util.ArrayList;
@@ -29,7 +30,8 @@ public class TestGA {
                 Genome g = new Genome(nodes, invdb);
                 for (int i = 0; i < inputs; i++) {
                     for (int j = outputs; j < nodes; j++) {
-                        g = g.addConnection(i, j, r.nextDouble());
+                        Gene conn = new ConnectionGene(i,j,r.nextDouble(),true);
+                        g.add(conn);
                     }
                 }
                 return g;
@@ -37,10 +39,13 @@ public class TestGA {
             pop.add(factory.apply(db));
             InnovationDB db2 = new InnovationDB((Hashtable)db.getDB().clone());
             pop.add(factory.apply(db2));
-            return db.equals(db2);
+            return db.equals(db2) && db.size() == 9;
         };
         System.out.println(dbTest.get());
-        
+        pop.forEach((e)->System.out.println(e));
+        pop.add(pop.get(0).clone().mutate());
+        System.out.println();
+        System.out.println(pop.get(2));
 
     }
 //    public static void XOR(){

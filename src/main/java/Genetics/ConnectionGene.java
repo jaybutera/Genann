@@ -1,5 +1,6 @@
 package Genetics;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -13,7 +14,6 @@ public final class ConnectionGene extends Gene{
         super(enabled, id);
         vect = new int[]{from,to};
         this.weight = weight;
-        this.enabled = enabled;
         this.id = id;
     }
     
@@ -22,19 +22,36 @@ public final class ConnectionGene extends Gene{
     }
     
     ConnectionGene setWeight(double w) {
-        return new ConnectionGene(vect[0], vect[1], w, this.enabled, this.id);
+        return new ConnectionGene(vect[0], vect[1], w, this.isEnabled(), this.id);
     }
 
 
+    
     @Override
-    Gene mutate(double rate) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    Gene mutate() {
+        Random r = new Random();
+        return setWeight(r.nextDouble()).setEnabled(true);
     }
-
+    @Override
+    Gene setEnabled(boolean e){
+        return new ConnectionGene(vect[0],vect[1],weight,e,id);
+    }
     @Override
     public String toString(){
-        return id+":"+Arrays.toString(vect);
+        return id+":"+Arrays.toString(vect)+":"+String.format("%.4f", this.weight);
         
+    }
+    /**
+     * 
+     * @param node
+     * Node to connect between this gene;
+     * @return 
+     */
+    public ArrayList<ConnectionGene> split(int node){
+        ArrayList<ConnectionGene> conns = new ArrayList();
+        conns.add(new ConnectionGene(this.to(),node,this.weight, this.isEnabled()));
+        conns.add(new ConnectionGene(node, this.from(), this.weight, this.isEnabled()));
+        return conns;
     }
     //used inside InnovationDB
     //assigns 2 genes, with same start and end, same hash
@@ -53,6 +70,12 @@ public final class ConnectionGene extends Gene{
         }
         final ConnectionGene other = (ConnectionGene) obj;
         return Arrays.equals(this.vect, other.vect);
+    }
+    public int to(){
+        return vect[0];
+    }
+    public int from(){
+        return vect[1];
     }
     
     

@@ -3,6 +3,7 @@ package Genetics;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Iterator;
+import java.util.Stack;
 
 public class Genome {
 
@@ -29,8 +30,10 @@ public class Genome {
         return this;
     }
 
-    public Genome addAll(ArrayList genes) {
-        chromosome.addAll(genes);
+    public Genome addAll(ArrayList<? extends Gene> genes) {
+        for(Gene g: genes){
+            this.add(g);
+        }
         return this;
     }
 
@@ -38,7 +41,6 @@ public class Genome {
         int id = db.get(g);
         g.setId(id);
         chromosome.add(g);
-        System.out.println(chromosome);
 
         return this;
     }
@@ -55,7 +57,7 @@ public class Genome {
 
     @Override
     public Genome clone() {
-        return new Genome(this.chromosome, nodes, db);
+        return new Genome(this.chromosome.clone(), nodes, db);
     }
 
     /**
@@ -66,6 +68,9 @@ public class Genome {
      * @return
      */
     public Genome split(ConnectionGene c) {
+        this.addNode();
+        System.out.println("Splitting "+c+" with node" +nodes);
+        
         this.addAll(c.split(nodes));
         this.remove(c);
 
@@ -74,8 +79,17 @@ public class Genome {
 
     public Genome mutate() {
         this.chromosome.mutate(mrate);
-        if (this.srate < this.random.nextDouble()) {
-
+        Stack<Gene> removed = new Stack();
+        for(Gene g: this.chromosome){
+            if (this.srate > this.random.nextDouble()) {
+                removed.push(g);
+            }
+        }
+        this.chromosome.removeAll(removed);
+        ConnectionGene sgene;
+        while(!removed.isEmpty()){
+            sgene = (ConnectionGene)removed.pop();
+            this.split(sgene);
         }
 
         return this;
