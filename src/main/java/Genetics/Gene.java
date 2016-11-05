@@ -11,8 +11,8 @@ import java.util.Arrays;
  *
  * @author shanemendez
  */
-public abstract class Gene {
-    private boolean enabled;
+public abstract class Gene implements Comparable{
+    protected boolean enabled;
     protected int id;
 
     public Gene(boolean enabled, int id) {
@@ -41,12 +41,13 @@ public abstract class Gene {
     boolean isEnabled() {
         return enabled;
     }
+    @Override
+    public int compareTo(Object o){
+        return this.id - ((Gene)o).id;
+    }
     
-    abstract Gene mutate();
-    abstract Gene setEnabled(boolean e);
-    /**
-     * @param enabled the enabled to set
-     */
-    
+    public abstract Gene mutate();
+    public abstract Gene setEnabled(boolean e);
+
   
 }

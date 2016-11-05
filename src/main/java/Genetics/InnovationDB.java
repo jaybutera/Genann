@@ -23,13 +23,24 @@ public class InnovationDB {
 
     //innovation has occured if gene hash exists inside hashtable
     //adds the gene to the table if it has not occurred.
-    int get(Gene g) {
+    public int get(Gene g) {
         if (db.containsKey(g)) {
             return db.get(g);
         }
+        throw new IllegalAccessError("Gene "+g+" not found in db");
+    }
+    public void add(Gene g){
         db.put(g, nextId);
-
-        return nextId++;
+        nextId++;
+    }
+    public int fget(Gene g){
+        try{
+            return get(g);
+        }
+        catch(IllegalAccessError e){
+            add(g);
+        }
+        return nextId -1; // element g will have this id iff it wasnt found by get
     }
 
     public int size() {

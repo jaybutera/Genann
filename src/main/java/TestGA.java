@@ -1,51 +1,78 @@
+
 import Genetics.ConnectionGene;
 import Genetics.Gene;
 import Genetics.Genome;
-import Genetics.InnovationDB;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class TestGA {
 
+    public static void print(String s) {
+        System.out.println(s);
+    }
+
     public static void main(String args[]) {
 
-        InnovationDB db = new InnovationDB();
         ArrayList<Genome> pop = new ArrayList();
-        
-        //Tests if innovation numbers are reliable,
-        //ids of connections from identicle genomes are the same
-        // ie: Connection(1->2) == OtherConnection(1->2)
-        //      therefore the id of the 2 connections are the same
-        Supplier<Boolean> dbTest = () -> {
-            System.out.print("Non-Duplication: ");
-            int nodes = 6;
-            int inputs = 3;
-            int outputs = 3;
-            Function<InnovationDB,Genome> factory = (invdb) -> {
+        Consumer<ArrayList> listln = (l) -> {
+            l.forEach((e) -> System.out.println(e));
+        };
+        Function<Integer, Gene> testGene = (id) -> {
+            return new Gene(true, id) {
+                double value = 0;
+
+                @Override
+                public Gene mutate() {
+                    this.value += 1;
+                    return this;
+                }
+
+                @Override
+                public Gene setEnabled(boolean e) {
+                    this.enabled = true;
+                    return this;
+                }
+
+            };
+        };
+        BiFunction<Integer, Integer, Supplier<Genome>> getGenomeFactory = (in, out) -> {
+            return () -> {
                 final Random r = new Random();
                 final ArrayList<ConnectionGene> init = new ArrayList();
-                Genome g = new Genome(nodes, invdb);
-                for (int i = 0; i < inputs; i++) {
-                    for (int j = outputs; j < nodes; j++) {
-                        Gene conn = new ConnectionGene(i,j,r.nextDouble(),true);
+                Genome g = new TestGenome(in + out);
+                for (int i = 0; i < in; i++) {
+                    for (int j = out; j < in + out; j++) {
+                        Gene conn = new ConnectionGene(i, j, r.nextDouble(), true);
                         g.add(conn);
                     }
                 }
                 return g;
             };
-            pop.add(factory.apply(db));
-            InnovationDB db2 = new InnovationDB((Hashtable)db.getDB().clone());
-            pop.add(factory.apply(db2));
-            return db.equals(db2) && db.size() == 9;
         };
-        System.out.println(dbTest.get());
-        pop.forEach((e)->System.out.println(e));
-        pop.add(pop.get(0).clone().mutate());
+        Supplier<Genome> genomeFactory = getGenomeFactory.apply(3, 3);
+        System.out.println("Creating genome with 3 input, 3 output nodes");
+        Genome original = genomeFactory.get();
+        Genome mutated = original.clone();
+        System.out.println("Genome clone equals original: " + mutated.equals(original));
+        mutated.mutate();
+        System.out.println("Original: " + original);
+        System.out.println("Mutated: " + mutated);
+        System.out.println("Changing original doesnt affect clone: " + !mutated.equals(original));
         System.out.println();
-        System.out.println(pop.get(2));
+        System.out.println("Overlap original vs mutated");
+        listln.accept(original.chromosome.overlap(mutated.chromosome));
+        System.out.println();
+
+        System.out.println("overlap mutated vs original");
+        listln.accept(mutated.chromosome.overlap(original.chromosome));
+        System.out.println();
+
+        System.out.printf("Creating children: \n\tStrong Original: %s\n\tStrong Mutated: %s",
+                original.chromosome.crossover(mutated.chromosome), mutated.chromosome.crossover(original.chromosome));
 
     }
 //    public static void XOR(){
@@ -75,5 +102,31 @@ public class TestGA {
 //        System.out.println("");
 //        //System.out.println("Convergence success: " + (1 - g.fitness / init_fit.fitness) + " %");
 //    }
+
+    static class TestGenome extends Genome {
+
+        Random r = new Random();
+        ArrayList<ConnectionGene> splits;
+
+        TestGenome(int i) {
+            super(i);
+        }
+
+        @Override
+        public ArrayList<ConnectionGene> split(ConnectionGene g) {
+            ArrayList<ConnectionGene> into = super.split(g);
+            splits.addAll(into);
+//            System.out.println("Splitting on "+g+" into "+into);
+            return into;
+        }
+
+        @Override
+        public Genome split() {
+            splits = new ArrayList();
+            return super.split();
+        }
+
+    }
+    String katie_is_hundry = "kello whats upp m;y name is katie and i llike to eat food im really hundry i like to eat hot cheetos they are really good and yummy";
 
 }
